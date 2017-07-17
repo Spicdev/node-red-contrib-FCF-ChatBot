@@ -1,0 +1,39 @@
+<script type="text/javascript">
+  RED.nodes.registerType('FCF-FacebookNotification', {
+    category: 'FCF',
+    color: '#FFCC66',
+    defaults: {
+      rules: {
+        value: [{
+          topic: ''
+        }]
+      },
+      token: {
+        value: ""
+      },
+      outputs: {
+        value: 0
+      }
+    },
+    inputs: 1,
+    outputs: 0,
+    paletteLabel: 'Facebook Notification',
+    icon: 'arrow-in.png',
+    label: function () {
+      return 'Facebook Notification';
+    }
+  });
+</script>
+
+<script type="text/x-red" data-template-name="FCF-FacebookNotification">
+  <div class="form-row">
+     <label for="node-input-token"><i class="icon-tag"></i>Token</label>
+     <input type="text" id="node-input-token">
+ </div>
+</script>
+
+<script type="text/x-red" data-help-name="FCF-FacebookNotification">
+  <p>
+    用來主動推播訊息至 Facebook 通訊平台
+  </p>
+</script>

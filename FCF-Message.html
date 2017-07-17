@@ -1,0 +1,95 @@
+<script type="text/javascript">
+  RED.nodes.registerType('FCF-Message', {
+    category: 'FCF',
+    color: '#A6BBCF',
+    defaults: {
+      name: {
+        value: ''
+      },
+      message: {
+        value: ['']
+      },
+      answer: {
+        value: false
+      },
+      track: {
+        value: false
+      },
+      parse_mode: {
+        value: ''
+      }
+    },
+    inputs: 1,
+    outputs: 1,
+    paletteLabel: 'Message',
+    icon: 'envelope.png',
+    label: function () {
+      return this.name || 'Message';
+    },
+    oneditsave: function () {
+      var messages = $("#node-input-message-container").editableList('items');
+      var node = this;
+      node.message = [];
+
+      var idx;
+      for (idx = 0; idx < messages.length; idx++) {
+        node.message.push({
+          message: messages[idx].find('textarea').val()
+        });
+      }
+    },
+
+    oneditprepare: function () {
+      $('#node-input-message-container')
+        .css('min-height', '300px')
+        .css('min-width', '450px')
+        .editableList({
+          addButton: 'Add',
+          addItem: function (container, i, item) {
+            var row = $('<div/>').appendTo(container);
+            var content = '';
+            if (typeof item == 'string') {
+              content = item;
+            } else if (item.message != null) {
+              content = item.message;
+            }
+            $('<textarea placeholder="訊息內容">' + content + '</textarea>')
+              .css({
+                width: '93%',
+                height: '100px'
+              })
+              .appendTo(row);
+          },
+          removable: true,
+          sortable: true
+        });
+
+      var message = this.message;
+      if (typeof message == 'string') {
+        message = [message];
+      }
+      var idx;
+      for (idx = 0; idx < message.length; idx++) {
+        $("#node-input-message-container").editableList('addItem', message[idx]);
+      }
+    }
+  });
+</script>
+
+<script type="text/x-red" data-template-name="FCF-Message">
+  <div class="form-row">
+    <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+  <div class="form-row node-input-rule-container-row">
+    <ol id="node-input-message-container"></ol>
+    <div style="max-width: 460px;font-size: 12px;color: #999999;line-height: 14px;clear:both;margin-top:5px;">
+      
+    </div>
+  </div>
+</script>
+<script type="text/x-red" data-help-name="FCF-Message">
+  <p>
+    用來傳送訊息至通訊平台 (用來傳送純文字訊息)
+  </p>
+</script>

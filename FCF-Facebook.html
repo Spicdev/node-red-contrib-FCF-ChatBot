@@ -1,0 +1,161 @@
+<script type="text/javascript">
+  RED.nodes.registerType('FCF-facebook-node', {
+    category: 'config',
+    defaults: {
+      botname: {
+        value: '',
+        required: true
+      },
+      usernames: {
+        value: '',
+        required: false
+      },
+      log: {
+        value: null
+      }
+    },
+    paletteName: 'Facebook Bot',
+    credentials: {
+      token: {
+        type: 'text'
+      },
+      verify_token: {
+        type: 'text'
+      },
+      app_secret: {
+        type: 'text'
+      }
+    },
+    label: function () {
+      return this.botname;
+    }
+  });
+
+</script>
+
+<script type="text/x-red" data-template-name="FCF-facebook-node">
+  <div class="form-row">
+    <label for="node-config-input-botname"><i class="icon-bookmark"></i> Bot-Name</label>
+    <input type="text" id="node-config-input-botname">
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-token"><i class="icon-cog"></i> Token</label>
+    <input type="text" id="node-config-input-token" placeholder="粉絲專頁存取權杖">
+    <div style="max-width: 460px;font-size: 12px;color: #999999;line-height: 14px;margin-top:5px;">
+
+    </div>
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-app_secret"><i class="icon-cog"></i> App Secret</label>
+    <input type="text" id="node-config-input-app_secret" placeholder="應用程式密鑰">
+    <div style="max-width: 460px;font-size: 12px;color: #999999;line-height: 14px;margin-top:5px;">
+
+    </div>
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-verify_token"><i class="icon-random"></i> Verify</label>
+    <input type="text" id="node-config-input-verify_token" placeholder="驗證權杖">
+    <div style="max-width: 460px;font-size: 12px;color: #999999;line-height: 14px;margin-top:5px;">
+
+    </div>
+  </div>
+  <div class="form-row">
+    
+  </div>
+  <div class="form-row">
+    
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="FCF-facebook-node">
+  <p>
+    Facebook 機器人設定
+  </p>
+</script>
+
+
+<script type="text/javascript">
+  RED.nodes.registerType('FCF-facebook-receive', {
+    category: 'FCF',
+    color: '#FFCC66',
+    defaults: {
+      bot: {
+        value: '',
+        type: 'FCF-facebook-node',
+        required: true
+      }
+    },
+    inputs: 0,
+    outputs: 1,
+    icon: 'chatbot-receiver.png',
+    paletteLabel: 'Facebook In',
+    label: function () {
+      return "Facebook In";
+    }
+  });
+
+</script>
+
+<script type="text/x-red" data-template-name="FCF-facebook-receive">
+  <div class="form-row">
+    <label for="node-input-bot"><i class="icon-bookmark"></i> Bot</label>
+    <input type="text" id="node-input-bot" placeholder="Bot">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="FCF-facebook-receive">
+  <p>
+    用來接收從 Facebook 通訊平台送來的訊息
+  </p>
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType('FCF-facebook-send', {
+    category: 'FCF',
+    color: '#FFCC66',
+    defaults: {
+      bot: {
+        value: "",
+        type: 'FCF-facebook-node',
+        required: true
+      },
+      track: {
+        value: false
+      },
+      outputs: {
+        value: 0
+      }
+    },
+    inputs: 1,
+    outputs: 0,
+    icon: 'chatbot-sender.png',
+    paletteLabel: 'Facebook Out',
+    label: function () {
+      return "Facebook Out";
+    },
+    oneditsave: function () {
+      var track = $('#node-input-track').is(':checked');
+      this.outputs = track ? 1 : 0;
+    }
+  });
+
+</script>
+
+<script type="text/x-red" data-template-name="FCF-facebook-send">
+  <div class="form-row">
+    <label for="node-input-bot"><i class="icon-bookmark"></i> Bot</label>
+    <input type="text" id="node-input-bot" placeholder="Bot">
+  </div>
+  <div class="form-row">
+    <label for="node-input-track"><i class="icon-envelope"></i> 接續話題</label>
+    <input type="checkbox" value="true" id="node-input-track">
+    <div style="max-width: 460px;font-size: 12px;color: #999999;line-height: 14px;margin-top:5px;">
+    </div>
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="FCF-facebook-send">
+  <p>
+    用來將訊息傳送至 Facebook 通訊平台
+  </p>
+</script>
