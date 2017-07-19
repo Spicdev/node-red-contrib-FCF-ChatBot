@@ -1,21 +1,21 @@
-var _ = require('underscore');
+var _ = require('underscore');//包含facebook in facebook out 還有config
 var moment = require('moment');
-var ChatLog = require('./lib/chat-log');
-var ChatContextStore = require('./lib/chat-context-store');
-var helpers = require('./lib/facebook/facebook');
-var utils = require('./lib/helpers/utils');
-var request = require('request').defaults({ encoding: null });
-var Bot = require('./lib/facebook/messenger-bot');
-var clc = require('cli-color');
+var ChatLog = require('./lib/chat-log');//??????????
+var ChatContextStore = require('./lib/chat-context-store');//??????????
+var helpers = require('./lib/facebook/facebook');//??????????
+var utils = require('./lib/helpers/utils');//??????????
+var request = require('request').defaults({ encoding: null });//Node.js的外部模組
+var Bot = require('./lib/facebook/messenger-bot');//??????????
+var clc = require('cli-color');//Node.js的外部模組，是做什麼的？？？？
 
 var DEBUG = false;
 var green = clc.greenBright;
 var white = clc.white;
 var grey = clc.blackBright;
 
-module.exports = function(RED) {
+module.exports = function(RED) {//module.exports開始
 
-  function FacebookBotNode(n) {
+  function FacebookBotNode(n) {//FacebookBotNode開始
     RED.nodes.createNode(this, n);
 
     var self = this;
@@ -34,7 +34,7 @@ module.exports = function(RED) {
     }
 
 
-    this.handleMessage = function(botMsg) {
+    this.handleMessage = function(botMsg) {//handleMessage開始
 
       /*
        { sender: { id: '10153461620831415' },
@@ -120,10 +120,10 @@ module.exports = function(RED) {
         .catch(function (error) {
           facebookBot.emit('relay', null, error);
         });
-    };
+    };////handleMessage結束
 
 
-    if (this.credentials) {
+    if (this.credentials) {//if的this.credentials開始
       this.token = this.credentials.token;
       this.app_secret = this.credentials.app_secret;
       this.verify_token = this.credentials.verify_token;
@@ -159,7 +159,7 @@ module.exports = function(RED) {
           this.bot.on('account_linking', this.handleMessage);
         }
       }
-    }
+    }//if的this.credentials結束
 
     this.on('close', function (done) {
       var endpoints = ['/facebook', '/facebook/_status'];
@@ -283,7 +283,7 @@ module.exports = function(RED) {
         }
       });
     }
-  }
+  }//FacebookBotNode結束
 
   RED.nodes.registerType('FCF-facebook-node', FacebookBotNode, {
     credentials: {
@@ -627,4 +627,4 @@ module.exports = function(RED) {
   }
   RED.nodes.registerType('FCF-facebook-send', FacebookOutNode);
 
-};
+};//module.exports結束

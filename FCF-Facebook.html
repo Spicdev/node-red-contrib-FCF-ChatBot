@@ -1,10 +1,10 @@
-<script type="text/javascript">
-  RED.nodes.registerType('FCF-facebook-node', {
-    category: 'config',
+<script type="text/javascript">//FCF-facebook-node開始
+  RED.nodes.registerType('FCF-facebook-node', {//FCF-facebook-node表示整個Facebook Node，包含Facebook In Facebook Out
+    category: 'config',//定義成config不會出現在面板左邊
     defaults: {
       botname: {
         value: '',
-        required: true
+        required: true//表示一定要談填的資料
       },
       usernames: {
         value: '',
@@ -15,18 +15,18 @@
       }
     },
     paletteName: 'Facebook Bot',
-    credentials: {
-      token: {
+    credentials: {//定義在這個表私密的資料，不會被匯出
+      token: {//粉絲專頁存取權杖（很長的那個）
         type: 'text'
       },
-      verify_token: {
+      verify_token: {//自己定義的token，要放在Facebook Messenger
         type: 'text'
       },
-      app_secret: {
+      app_secret: {//Facebook那邊的應用程式密鑰（要打密碼才會顯示）
         type: 'text'
       }
     },
-    label: function () {
+    label: function () {//回傳這裡的botname變數
       return this.botname;
     }
   });
@@ -60,10 +60,10 @@
     </div>
   </div>
   <div class="form-row">
-    
+
   </div>
   <div class="form-row">
-    
+
   </div>
 </script>
 
@@ -71,10 +71,10 @@
   <p>
     Facebook 機器人設定
   </p>
-</script>
+</script><!--FCF-facebook-node結束-->
 
 
-<script type="text/javascript">
+<script type="text/javascript">//Facebook In開始
   RED.nodes.registerType('FCF-facebook-receive', {
     category: 'FCF',
     color: '#FFCC66',
@@ -96,7 +96,7 @@
 
 </script>
 
-<script type="text/x-red" data-template-name="FCF-facebook-receive">
+<script type="text/x-red" data-template-name="FCF-facebook-receive"><!-- Facebook In第二部分 -->
   <div class="form-row">
     <label for="node-input-bot"><i class="icon-bookmark"></i> Bot</label>
     <input type="text" id="node-input-bot" placeholder="Bot">
@@ -107,9 +107,9 @@
   <p>
     用來接收從 Facebook 通訊平台送來的訊息
   </p>
-</script>
+</script><!-- Facebook Out結束 -->
 
-<script type="text/javascript">
+<script type="text/javascript">//Facebook Out開始
   RED.nodes.registerType('FCF-facebook-send', {
     category: 'FCF',
     color: '#FFCC66',
@@ -141,7 +141,7 @@
 
 </script>
 
-<script type="text/x-red" data-template-name="FCF-facebook-send">
+<script type="text/x-red" data-template-name="FCF-facebook-send"><!-- Facebook Out第二部分 -->
   <div class="form-row">
     <label for="node-input-bot"><i class="icon-bookmark"></i> Bot</label>
     <input type="text" id="node-input-bot" placeholder="Bot">
@@ -158,4 +158,4 @@
   <p>
     用來將訊息傳送至 Facebook 通訊平台
   </p>
-</script>
+</script><!-- Facebook Out結束 -->

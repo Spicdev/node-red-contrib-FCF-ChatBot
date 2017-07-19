@@ -3,7 +3,7 @@ var utils = require('./lib/helpers/utils');
 var MessageTemplate = require('./lib/message-template');
 var emoji = require('node-emoji');
 
-module.exports = function(RED) {
+module.exports = function(RED) {//根據不同平台並整理成他們可以吃的格式
 
   function FCFMessage(config) {
     RED.nodes.createNode(this, config);
