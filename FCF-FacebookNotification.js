@@ -1,5 +1,5 @@
 var request = require("request");
-module.exports = function (RED) {
+module.exports = function (RED) {//要看facebook的api
 
     function FacebookNotification(config) {
         RED.nodes.createNode(this, config);

@@ -1,5 +1,5 @@
 var request = require("request");
-module.exports = function (RED) {
+module.exports = function (RED) {//把Frame送出去，去拿資料。
 
     function PullService(config) {
         RED.nodes.createNode(this, config);

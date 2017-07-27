@@ -1,25 +1,26 @@
-module.exports = function (RED) {
+module.exports = function (RED) {//把所有資料存起來，並作格式化，以便傳給其他服務
 
     function Frame(config) {
         RED.nodes.createNode(this, config);
+
         var node = this;
-        var context = this.context().flow;
-        node.name = config.name;
+        var context = this.context().flow;//context起手式，http://bit.ly/2u8Sysx
+        node.name = config.name;//config.name是自己取的這個Frame的名稱
 
         this.on('input', function (msg) {
-
             var frame = {};
             if (node.name)
                 var name = node.name;
             else
                 var name = 1;
 
-            frame[name] = {
-                Query: {},
-                UserData: {},
-                Result: {}
-            };
+
             if (context.get("frame") == null) {
+                frame[name] = {
+                    Query: {},
+                    UserData: {},
+                    Result: {}
+                 };
                 context.set("frame", frame);
             }
 
@@ -30,7 +31,22 @@ module.exports = function (RED) {
                     UserData: {},
                     Result: {}
                 };
+
+
+
+
+
+
+
+
+
+
+
+
+            console.log("Frame：msg.query=");
             console.log(msg.query);
+
+
             if (msg.query != null) {
 
                 Object.keys(msg.query).map(function (objectKey, index) {
@@ -53,9 +69,9 @@ module.exports = function (RED) {
                 });
             }
             context.set("frame", frame);
-            
+
             msg.frame = context.get("frame")[name];
-            
+
             console.log(msg.frame);
             node.send(msg);
 

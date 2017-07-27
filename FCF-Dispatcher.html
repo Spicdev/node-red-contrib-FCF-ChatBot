@@ -1,5 +1,5 @@
 <script type="text/javascript">
-  RED.nodes.registerType('FCF-Dispatcher', {
+  RED.nodes.registerType('FCF-Dispatcher', {//Dispatcher開始
     category: 'FCF',
     color: '#A6BBCF',
     defaults: {
@@ -17,13 +17,13 @@
     },
     inputs: 1,
     outputs: 1,
-    paletteLabel: 'Dispatcher',
+    paletteLabel: 'Dispatcher',//在面板上顯示的名稱
     icon: 'template.png',
     label: function () {
       return 'Dispatcher';
     },
-    oneditsave: function () {
-      var rules = $('#node-input-rule-container').editableList('items');
+    oneditsave: function () {//當它Ok的時候存起來
+      var rules = $('#node-input-rule-container').editableList('items');//editableList的用法請見http://bit.ly/2u7kewg
       var node = this;
       node.rules = [];
       rules.each(function (i) {
@@ -35,14 +35,14 @@
           });
         }
       });
-      this.outputs = node.rules.length;
+      this.outputs = node.rules.length;//增加了幾個Action，就有幾個輸出？
     },
-    oneditprepare: function () {
+    oneditprepare: function () {//在現在這個狀態，要做的事情。oneditprepare官方說明請見http://bit.ly/2uHbmAZ
       var node = this;
       $("#node-input-rule-container").css('min-height', '250px').css('min-width', '450px').editableList({
-        addItem: function (container, i, opt) {
+        addItem: function (container, i, opt) {//新增項目。http://bit.ly/2uBgKVp
           var rule = opt;
-          var row = $('<div/>').appendTo(container);
+          var row = $('<div/>').appendTo(container);//http://api.jquery.com/appendto/
           var selectField = $('<input/>', {
               style: "width:80%; margin-left: 5px; text-align: left;"
             })
@@ -57,16 +57,16 @@
           }).appendTo(row);
           finalspan.append('&nbsp;&#8594; <span class="node-input-rule-index">' + (i + 1) + '</span>');
         },
-        removeItem: function (opt) {
+        removeItem: function (opt) {//刪除項目
           var rules = $('#node-input-rule-container').editableList('items');
           rules.each(function (i) {
             $(this).find('.node-input-rule-index').html(i + 1);
           });
         },
-        sortItems: function () {
+        sortItems: function () {//可手動移動項目的順序
           var rules = $('#node-input-rule-container').editableList('items');
           rules.each(function (i) {
-            $(this).find('.node-input-rule-index').html(i + 1);
+            $(this).find('.node-input-rule-index').html(i + 1);//這裡是抓rule這個字
           });
         },
         sortable: true,
@@ -80,7 +80,7 @@
   });
 </script>
 
-<script type="text/x-red" data-template-name="FCF-Dispatcher">
+<script type="text/x-red" data-template-name="FCF-Dispatcher"><!--Dispatcher第二部分-->
   <div class="form-row">
      <label for="node-input-token"><i class="icon-tag"></i> Api.ai Token</label>
      <input type="text" id="node-input-token">
@@ -92,7 +92,7 @@
     <ol id="node-input-rule-container"></ol>
   </div>
   <div style="max-width: 460px;font-size: 12px;color: #999999;line-height: 14px;clear:both;margin-top:5px;">
-    
+
   </div>
 </script>
 
@@ -100,4 +100,4 @@
   <p>
     藉由串接 Api.ai 來分析對話的分支
   </p>
-</script>
+</script><!--Dispatcher結束-->

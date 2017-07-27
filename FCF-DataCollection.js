@@ -80,7 +80,7 @@ module.exports = function (RED) {
                 context.set("dataCount", context.get("dataCount") - 1);
 
                 node.send(output);
-            } else {
+            } else {//輸出第二個分支
                 output[0] = null;
                 output[1] = msg;
                 var userData = context.get("userData");
