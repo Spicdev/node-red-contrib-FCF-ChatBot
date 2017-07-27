@@ -47,7 +47,7 @@
               style: "width:80%; margin-left: 5px; text-align: left;",
               id: "input1"
             })
-            .attr('placeholder', '訊息內容')
+            .attr('placeholder', 'Message Content')
             .attr('type', 'text')
             .appendTo(row);
 
@@ -55,7 +55,7 @@
               style: "width:80%; margin-left: 5px; text-align: left;",
               id: "input2"
             })
-            .attr('placeholder', '變數名稱')
+            .attr('placeholder', 'Variable Name')
             .attr('type', 'text')
             .appendTo(row);
 
@@ -95,7 +95,7 @@
 <script type="text/x-red" data-template-name="FCF-DataCollection">
 
   <div class="form-row">
-    <label for="node-input-collect"><i class="fa fa-tasks"></i> 資料類型</span></label>
+    <label for="node-input-collect"><i class="fa fa-tasks"></i> Data Type</span></label>
     <select type="text" id="node-input-collect" style="width:70%;">
         <option value="query">Query</option>
         <option value="userData">User Data</option>
@@ -103,7 +103,7 @@
   </div>
 
   <div class="form-row">
-    <label for="node-input-name" style="width:100%;"><i class="fa fa-tag"></i> 訊息以及變數：</label>
+    <label for="node-input-name" style="width:100%;"><i class="fa fa-tag"></i> Message Content and Variable Name：</label>
   </div>
   <div class="form-row node-input-rule-container-row">
     <ol id="node-input-rule-container"></ol>
