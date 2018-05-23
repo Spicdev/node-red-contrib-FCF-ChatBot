@@ -8,35 +8,43 @@ module.exports = function(RED) {
         node.token = config.token;
         node.rules = config.rules;
 
-        this.on('input', function(msg) {
+        this.on("input", function(msg) {
             var rules = node.rules;
             var token = encodeURIComponent(node.token);
             var output = [];
             var matched = false;
-            var action;
-            request({
-                uri: "https://api.api.ai/v1/query?v=20150910",
+
+            var headers = {
+                "Content-Type": "application/json;charset=utf-8",
+                "Authorization": "Bearer " + token,
+            }
+
+            var options = {
+                url: "https://dialogflow.googleapis.com/v2/projects/parkingbot-c50be/agent/sessions/2gfrroqdqwvf2a2:detectIntent",
                 method: "POST",
-                headers: {
-                    "Authorization": "Bearer " + token,
-                    "Content-Type": "application/json; charset=utf-8"
-                },
+                headers: headers,
                 body: JSON.stringify({
-                    "query": [
-                        msg.payload.content
-                    ],
-                    "lang": "zh",
-                    "sessionId": "1234567890"
+                    "queryInput": {
+                        "text": {
+                            "text": msg.payload.content,
+                            "languageCode": "zh-TW"
+                        }
+                    }
                 })
-            }, function(error, response, body) {
-                var action = JSON.parse(body);
-                rules.forEach(function(rule) {
-                    if ((action.result.action).toString() == (rule.topic).toString()) {
+            }
+
+            request(options, function(error, response, body) {
+                var body = JSON.parse(body);
+                var intent = body.queryResult.intent.displayName;
+                rules.forEach(function(rule){
+                    if(intent == (rule.topic).toString()){
                         matched = true;
-                        if ((action.result.action).toString() == "input.unknown")
-                            msg.payload = action.result.fulfillment.speech;
+                        if(intent == "Default Fallback Intent" ){
+                            msg.payload = body.queryResult.queryText;
+                        }
                         output.push(msg);
-                    } else {
+                    }
+                    else{
                         output.push(null);
                     }
                 });
@@ -44,5 +52,5 @@ module.exports = function(RED) {
             });
         });
     }
-    RED.nodes.registerType('FCF-Dispatcher', Dispatcher);
+    RED.nodes.registerType("FCF-Dispatcher", Dispatcher);
 };
