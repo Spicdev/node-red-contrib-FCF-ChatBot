@@ -1,19 +1,18 @@
 var request = require("request");
-module.exports = function (RED) {
 
-    function Dispatcher(config) {
+module.exports = function(RED) {
+    function DataCollection(config) {
+
         RED.nodes.createNode(this, config);
         var node = this;
         var context = this.context();
         node.rules = config.rules;
         node.collect = config.collect;
 
-        this.on('input', function (msg) {
-
+        this.on('input', function(msg) {
 
             var rules = node.rules;
             var collect = node.collect;
-            console.log(collect);
             var output = [];
 
             if (collect == "query")
@@ -31,18 +30,19 @@ module.exports = function (RED) {
                     msg.payload = rules[context.get("dataCount")].topic;
                     context.set("dataCount", context.get("dataCount") - 1);
                     node.send(output);
-                } else if (context.get("dataCount") > -1) {
-                output[0] = msg;
-                output[1] = null;
-                var query = context.get("query");
-                query[rules[context.get("dataCount") + 1].topic2] = msg.payload.content;
-                context.set("query", query);
+                }
+                else if (context.get("dataCount") > -1) {
+                    output[0] = msg;
+                    output[1] = null;
+                    var query = context.get("query");
+                    query[rules[context.get("dataCount") + 1].topic2] = msg.payload.content;
+                    context.set("query", query);
 
-                msg.payload = rules[context.get("dataCount")].topic;
-                context.set("dataCount", context.get("dataCount") - 1);
-
-                node.send(output);
-            } else {
+                    msg.payload = rules[context.get("dataCount")].topic;
+                    context.set("dataCount", context.get("dataCount") - 1);
+                    node.send(output);
+                }
+            else {
                 output[0] = null;
                 output[1] = msg;
                 var query = context.get("query");
@@ -69,18 +69,20 @@ module.exports = function (RED) {
                     msg.payload = rules[context.get("dataCount")].topic;
                     context.set("dataCount", context.get("dataCount") - 1);
                     node.send(output);
-                } else if (context.get("dataCount") > -1) {
-                output[0] = msg;
-                output[1] = null;
-                var userData = context.get("userData");
-                userData[rules[context.get("dataCount") + 1].topic2] = msg.payload.content;
-                context.set("userData", userData);
+                }
+                else if (context.get("dataCount") > -1) {
+                    output[0] = msg;
+                    output[1] = null;
+                    var userData = context.get("userData");
+                    userData[rules[context.get("dataCount") + 1].topic2] = msg.payload.content;
+                    context.set("userData", userData);
 
-                msg.payload = rules[context.get("dataCount")].topic;
-                context.set("dataCount", context.get("dataCount") - 1);
+                    msg.payload = rules[context.get("dataCount")].topic;
+                    context.set("dataCount", context.get("dataCount") - 1);
 
-                node.send(output);
-            } else {//輸出第二個分支
+                    node.send(output);
+                }
+            else {
                 output[0] = null;
                 output[1] = msg;
                 var userData = context.get("userData");
@@ -90,10 +92,7 @@ module.exports = function (RED) {
                 context.set("dataCount", null);
                 node.send(output);
             }
-
-
         });
     }
-
-    RED.nodes.registerType('FCF-DataCollection', Dispatcher);
+    RED.nodes.registerType('FCF-DataCollection', DataCollection);
 };

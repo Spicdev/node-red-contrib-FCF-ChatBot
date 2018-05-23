@@ -1,12 +1,15 @@
 var request = require("request");
-module.exports = function (RED) {//要看facebook的api
+
+module.exports = function(RED) {
 
     function FacebookNotification(config) {
+
         RED.nodes.createNode(this, config);
         var node = this;
         node.token = config.token;
         var context = this.context().flow;
-        this.on('input', function (msg) {
+
+        this.on('input', function(msg) {
             request({
                     uri: 'https://graph.facebook.com/v2.6/me/messages?access_token=' + node.token,
                     method: 'POST',
@@ -19,13 +22,10 @@ module.exports = function (RED) {//要看facebook的api
                         }
                     }
                 },
-                function (error, response, body) {
-
+                function(error, response, body) {
                     console.log(msg);
                 }
             );
-
-
         });
     }
 
