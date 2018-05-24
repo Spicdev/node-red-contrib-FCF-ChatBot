@@ -1,4 +1,5 @@
 var request = require("request");
+var crypto = require("crypto");//引用可以產生亂數字串的模組
 
 module.exports = function(RED) {
     function Dispatcher(config) {
@@ -9,10 +10,12 @@ module.exports = function(RED) {
         node.rules = config.rules;
 
         this.on("input", function(msg) {
+
             var rules = node.rules;
             var token = encodeURIComponent(node.token);
             var output = [];
             var matched = false;
+            var buf = crypto.randomBytes(30);//產生一個30byte的亂數資料，來當作請求網址的session ID
 
             var headers = {
                 "Content-Type": "application/json;charset=utf-8",
@@ -20,7 +23,7 @@ module.exports = function(RED) {
             }
 
             var options = {
-                url: "https://dialogflow.googleapis.com/v2/projects/parkingbot-c50be/agent/sessions/2gfrroqdqwvf2a2:detectIntent",
+                url: `https://dialogflow.googleapis.com/v2/projects/parkingbot-c50be/agent/sessions/${buf.toString("base64")}:detectIntent`,
                 method: "POST",
                 headers: headers,
                 body: JSON.stringify({
