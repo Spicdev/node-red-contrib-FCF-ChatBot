@@ -21,7 +21,6 @@ module.exports = function (RED) {
 
             var rules = node.rules;
             var output = [];
-            var matched = false;
             var buf = crypto.randomBytes(25); //產生一個30byte的亂數資料，來當作請求網址的session ID
             const email = node.email;
             const privateKey = node.privateKey.replace(/\\n/g, "\n");
@@ -58,7 +57,6 @@ module.exports = function (RED) {
                     var action = body.queryResult.action;
                     rules.forEach(function (rule) {
                         if (action == (rule.topic).toString()) {
-                            matched = true;
                             if (action == "input.unknown") {
                                 msg.payload = body.queryResult.queryText;
                             }
