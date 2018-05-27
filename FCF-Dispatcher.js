@@ -55,11 +55,11 @@ module.exports = function (RED) {
 
                 request(options, function (error, response, body) {
                     var body = JSON.parse(body);
-                    var intent = body.queryResult.intent.displayName;
+                    var action = body.queryResult.action;
                     rules.forEach(function (rule) {
-                        if (intent == (rule.topic).toString()) {
+                        if (action == (rule.topic).toString()) {
                             matched = true;
-                            if (intent == "Default Fallback Intent") {
+                            if (action == "input.unknown") {
                                 msg.payload = body.queryResult.queryText;
                             }
                             output.push(msg);
