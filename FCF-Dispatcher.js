@@ -21,7 +21,7 @@ module.exports = function (RED) {
 
             var rules = node.rules;
             var output = [];
-            var buf = crypto.randomBytes(25); //產生一個30byte的亂數資料，來當作請求網址的session ID
+            var buf = crypto.randomBytes(25); //產生一個25byte的亂數資料，來當作請求網址的session ID
 
             const gtoken = new GoogleToken({
                 email: node.email,

@@ -49,7 +49,7 @@ module.exports = function (RED) {
 
                 request(options, function (error, response, body) {
                     var body = JSON.parse(body);
-                    msg.query = body.queryResult.parameters;
+                    msg.payload.keyword = body.queryResult.parameters;
                     node.send(msg);
                 });
             }
