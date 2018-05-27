@@ -1,39 +1,46 @@
 <script type="text/javascript">
-  RED.nodes.registerType('FCF-KeywordExtraction', {
-    category: 'FCF',
-    color: '#FDD0A2',
-    defaults: {
-      rules: {
-        value: [{
-          topic: ''
-        }]
-      },
-      token: {
-        value: ""
-      },
-      outputs: {
-        value: 1
-      }
-    },
-    inputs: 1,
-    outputs: 1,
-    paletteLabel: 'Keyword Extraction',
-    icon: 'light.png',
-    label: function () {
-      return 'Keyword Extraction';
-    }
-  });
+    RED.nodes.registerType("FCF-KeywordExtraction", {
+        category: "FCF",
+        color: "#FDD0A2",
+        defaults: {
+            rules: {
+                value: [{
+                    topic: ""
+                }]
+            },
+            email: {
+                value: ""
+            },
+            privateKey: {
+                value: ""
+            },
+            outputs: {
+                value: 1
+            }
+        },
+        inputs: 1,
+        outputs: 1,
+        paletteLabel: "Keyword Extraction",
+        icon: "light.png",
+        label: function () {
+            return "Keyword Extraction";
+        }
+    });
 </script>
 
 <script type="text/x-red" data-template-name="FCF-KeywordExtraction">
-  <div class="form-row">
-     <label for="node-input-token"><i class="icon-tag"></i> Api.ai Token</label>
-     <input type="text" id="node-input-token">
- </div>
+    <div class="form-row">
+        <label for="node-input-email" style="width:100%;"><i class="icon-tag"></i> Dialogflow Service Account E-mail：</label>
+        <input type="text" id="node-input-email">
+    </div>
+    <div class="form-row">
+        <label for="node-input-privateKey" style="width:100%;"><i class="icon-tag"></i> Dialogflow Service Account Private Key：</label>
+        <input type="text" id="node-input-privateKey">
+    </div>
 </script>
 
 <script type="text/x-red" data-help-name="FCF-KeywordExtraction">
-  <p>
-    藉由串接 Api.ai 來分析使用者傳入的訊息，並擷取當中的關鍵字
-  </p>
+    <p>
+        藉由串接 Api.ai 來分析使用者傳入的訊息，並擷取當中的關鍵字
+    </p>
 </script>

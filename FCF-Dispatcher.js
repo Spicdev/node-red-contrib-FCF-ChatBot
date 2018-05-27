@@ -22,13 +22,11 @@ module.exports = function (RED) {
             var rules = node.rules;
             var output = [];
             var buf = crypto.randomBytes(25); //產生一個30byte的亂數資料，來當作請求網址的session ID
-            const email = node.email;
-            const privateKey = node.privateKey.replace(/\\n/g, "\n");
 
             const gtoken = new GoogleToken({
-                email: email,
+                email: node.email,
                 scope: ["https://www.googleapis.com/auth/cloud-platform"], // or space-delimited string of scopes
-                key: privateKey
+                key: node.privateKey.replace(/\\n/g, "\n")
             });
 
             var sendRequest = function (token) {
