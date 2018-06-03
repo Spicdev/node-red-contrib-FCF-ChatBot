@@ -31,7 +31,7 @@ module.exports = function (RED) {
                 var headers = {
                     "Content-Type": "application/json;charset=utf-8",
                     "Authorization": "Bearer " + token,
-                }
+                };
 
                 var options = {
                     url: `https://dialogflow.googleapis.com/v2/projects/parkingbot-c50be/agent/sessions/${buf.toString("hex")}:detectIntent`,
@@ -45,22 +45,22 @@ module.exports = function (RED) {
                             }
                         }
                     })
-                }
+                };
 
                 request(options, function (error, response, body) {
                     var body = JSON.parse(body);
-                    msg.payload.keyword = body.queryResult.parameters;
+                    msg.query = body.queryResult.parameters;//取得關鍵字
                     node.send(msg);
                 });
-            }
+            };
 
             var gt = function () {
                 gtoken.getToken().then(function (token) {
                     return sendRequest(token);
                 }).catch(function (error) {
-                    console.log(error)
+                    console.log(error);
                 });
-            }
+            };
             gt();
         });
     }
