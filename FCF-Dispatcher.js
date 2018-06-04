@@ -17,6 +17,7 @@ module.exports = function (RED) {
         var projectID = this.credentials.projectID;
         var email = this.credentials.email;
         var privateKey = this.credentials.privateKey.replace(/\\n/g, "\n");
+        privateKey = privateKey.replace(/\\n/g, "\n");
 
         this.on("input", function (msg) {
 
