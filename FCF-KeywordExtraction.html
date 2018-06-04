@@ -3,24 +3,13 @@
         category: "FCF",
         color: "#FDD0A2",
         defaults: {
-            rules: {
-                value: [{
-                    topic: ""
-                }]
+            agentCredentials: {
+                value: "",
+                type: "FCF-DialogflowConfig",
+                required: true
             },
             outputs: {
                 value: 1
-            }
-        },
-        credentials: {
-            projectID: {
-                type: "text"
-            },
-            email: {
-                type: "text"
-            },
-            privateKey: {
-                type: "text"
             }
         },
         inputs: 1,
@@ -35,21 +24,13 @@
 
 <script type="text/x-red" data-template-name="FCF-KeywordExtraction">
     <div class="form-row">
-        <label for="node-input-projectID" style="width:100%;"><i class="icon-tag"></i> Google Project ID (Dialogflow Project ID)：</label>
-        <input type="text" id="node-input-projectID">
-    </div>
-    <div class="form-row">
-        <label for="node-input-email" style="width:100%;"><i class="icon-tag"></i> Dialogflow Service Account E-mail：</label>
-        <input type="text" id="node-input-email">
-    </div>
-    <div class="form-row">
-        <label for="node-input-privateKey" style="width:100%;"><i class="icon-tag"></i> Dialogflow Service Account Private Key：</label>
-        <input type="text" id="node-input-privateKey">
+        <label for="node-input-agentCredentials" style="width:100%;"><i class="icon-bookmark"></i>Dialogflow Agent Credentials：</label>
+        <input type="text" id="node-input-agentCredentials" placeholder="Agent">
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="FCF-KeywordExtraction">
     <p>
-        藉由串接 Api.ai 來分析使用者傳入的訊息，並擷取當中的關鍵字
+        藉由串接 Dialogflow 來分析使用者傳入的訊息，並擷取當中的關鍵字
     </p>
 </script>
