@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    RED.nodes.registerType("FCF-Dispatcher", {//Dispatcher開始
+    RED.nodes.registerType("FCF-Dispatcher", {
         category: "FCF",
         color: "#A6BBCF",
         defaults: {
@@ -8,19 +8,24 @@
                     topic: ""
                 }]
             },
-            email: {
-                value: ""
-            },
-            privateKey: {
-                value: ""
-            },
             outputs: {
                 value: 1
             }
         },
+        credentials: {
+            projectID: {
+                type: "text"
+            },
+            email: {
+                type: "text"
+            },
+            privateKey: {
+                type: "text"
+            }
+        },
         inputs: 1,
         outputs: 1,
-        paletteLabel: "Dispatcher",//在面板上顯示的名稱
+        paletteLabel: "Dispatcher",
         icon: "template.png",
         label: function () {
             return "Dispatcher";
@@ -84,6 +89,10 @@
 </script>
 
 <script type="text/x-red" data-template-name="FCF-Dispatcher">
+    <div class="form-row">
+        <label for="node-input-projectID" style="width:100%;"><i class="icon-tag"></i> Google Project ID (Dialogflow Project ID)：</label>
+        <input type="text" id="node-input-projectID">
+    </div>
     <div class="form-row">
         <label for="node-input-email" style="width:100%;"><i class="icon-tag"></i> Dialogflow Service Account E-mail：</label>
         <input type="text" id="node-input-email">

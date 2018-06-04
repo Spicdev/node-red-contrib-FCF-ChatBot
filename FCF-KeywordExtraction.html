@@ -8,14 +8,19 @@
                     topic: ""
                 }]
             },
-            email: {
-                value: ""
-            },
-            privateKey: {
-                value: ""
-            },
             outputs: {
                 value: 1
+            }
+        },
+        credentials: {
+            projectID: {
+                type: "text"
+            },
+            email: {
+                type: "text"
+            },
+            privateKey: {
+                type: "text"
             }
         },
         inputs: 1,
@@ -29,6 +34,10 @@
 </script>
 
 <script type="text/x-red" data-template-name="FCF-KeywordExtraction">
+    <div class="form-row">
+        <label for="node-input-projectID" style="width:100%;"><i class="icon-tag"></i> Google Project ID (Dialogflow Project ID)：</label>
+        <input type="text" id="node-input-projectID">
+    </div>
     <div class="form-row">
         <label for="node-input-email" style="width:100%;"><i class="icon-tag"></i> Dialogflow Service Account E-mail：</label>
         <input type="text" id="node-input-email">

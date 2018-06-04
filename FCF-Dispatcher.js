@@ -14,8 +14,9 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         var node = this;
         node.rules = config.rules;
-        node.email = config.email;
-        node.privateKey = config.privateKey;
+        var projectID = this.credentials.projectID;
+        var email = this.credentials.email;
+        var privateKey = this.credentials.privateKey;
 
         this.on("input", function (msg) {
 
@@ -24,9 +25,9 @@ module.exports = function (RED) {
             var buf = crypto.randomBytes(25); //產生一個25byte的亂數資料，來當作請求網址的session ID
 
             const gtoken = new GoogleToken({
-                email: node.email,
-                scope: ["https://www.googleapis.com/auth/cloud-platform"], // or space-delimited string of scopes
-                key: node.privateKey.replace(/\\n/g, "\n")
+                email: email,
+                scope: ["https://www.googleapis.com/auth/cloud-platform"],
+                key: privateKey.replace(/\\n/g, "\n")
             });
 
             var sendRequest = function (token) {
@@ -37,7 +38,7 @@ module.exports = function (RED) {
                 };
 
                 var options = {
-                    url: `https://dialogflow.googleapis.com/v2/projects/parkingbot-c50be/agent/sessions/${buf.toString("hex")}:detectIntent`,
+                    url: `https://dialogflow.googleapis.com/v2/projects/${projectID}/agent/sessions/${buf.toString("hex")}:detectIntent`,
                     method: "POST",
                     headers: headers,
                     body: JSON.stringify({
@@ -77,5 +78,17 @@ module.exports = function (RED) {
             gt();
         });
     }
-    RED.nodes.registerType("FCF-Dispatcher", Dispatcher);
+    RED.nodes.registerType("FCF-Dispatcher", Dispatcher, {
+        credentials: {
+            projectID: {
+                type: "text"
+            },
+            email: {
+                type: "text"
+            },
+            privateKey: {
+                type: "text"
+            }
+        }
+    });
 };
