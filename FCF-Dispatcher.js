@@ -13,6 +13,8 @@ module.exports = function (RED) {
 
         RED.nodes.createNode(this, config);
         var node = this;
+        node.agentCredentials = RED.nodes.getNode(config.agentCredentials);
+        console.log(node.agentCredentials);
         node.rules = config.rules;
         var projectID = this.credentials.projectID;
         var email = this.credentials.email;

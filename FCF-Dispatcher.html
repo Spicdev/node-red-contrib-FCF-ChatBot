@@ -3,6 +3,11 @@
         category: "FCF",
         color: "#A6BBCF",
         defaults: {
+            agentCredentials: {
+                value: "",
+                type: "FCF-DialogflowConfig",
+                required: true
+            },
             rules: {
                 value: [{
                     topic: ""
@@ -10,17 +15,6 @@
             },
             outputs: {
                 value: 1
-            }
-        },
-        credentials: {
-            projectID: {
-                type: "text"
-            },
-            email: {
-                type: "text"
-            },
-            privateKey: {
-                type: "text"
             }
         },
         inputs: 1,
@@ -90,16 +84,8 @@
 
 <script type="text/x-red" data-template-name="FCF-Dispatcher">
     <div class="form-row">
-        <label for="node-input-projectID" style="width:100%;"><i class="icon-tag"></i> Google Project ID (Dialogflow Project ID)：</label>
-        <input type="text" id="node-input-projectID">
-    </div>
-    <div class="form-row">
-        <label for="node-input-email" style="width:100%;"><i class="icon-tag"></i> Dialogflow Service Account E-mail：</label>
-        <input type="text" id="node-input-email">
-    </div>
-    <div class="form-row">
-        <label for="node-input-privateKey" style="width:100%;"><i class="icon-tag"></i> Dialogflow Service Account Private Key：</label>
-        <input type="text" id="node-input-privateKey">
+        <label for="node-input-agentCredentials"><i class="icon-bookmark"></i>Dialogflow Agent Credentials：</label>
+        <input type="text" id="node-input-agentCredentials" placeholder="Agent">
     </div>
     <div class="form-row">
         <label for="node-input-name" style="width:100%;"><i class="fa fa-tag"></i> Action Value：</label>
@@ -113,6 +99,6 @@
 
 <script type="text/x-red" data-help-name="FCF-Dispatcher">
     <p>
-        藉由串接 Api.ai 來分析對話的分支
+        藉由串接 Dialogflow 來分析對話的分支
     </p>
 </script>

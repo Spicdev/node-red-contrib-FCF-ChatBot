@@ -1,0 +1,50 @@
+<script type="text/javascript">
+    RED.nodes.registerType("FCF-DialogflowConfig", {
+        category: "config",
+        defaults: {
+            agentName: {
+                value: "",
+                required: true
+            }
+        },
+        paletteName: "paletteNameXanxus",
+        credentials: {
+            projectID: {
+                type: "text"
+            },
+            email: {
+                type: "text"
+            },
+            privateKey: {
+                type: "text"
+            }
+        },
+        label: function () {
+            return this.agentName;
+        }
+    });
+
+</script>
+<script type="text/x-red" data-template-name="FCF-DialogflowConfig">
+    <div class="form-row">
+        <label for="node-config-input-agentName"><i class="icon-bookmark"></i> Agent Name：</label>
+        <input type="text" id="node-config-input-agentName">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-projectID" style="width:100%;"><i class="icon-tag"></i> Google Project ID (Dialogflow Project ID)：</label>
+        <input type="text" id="node-config-input-projectID">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-email" style="width:100%;"><i class="icon-tag"></i> Dialogflow Service Account E-mail：</label>
+        <input type="text" id="node-config-input-email">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-privateKey" style="width:100%;"><i class="icon-tag"></i> Dialogflow Service Account Private Key：</label>
+        <input type="text" id="node-config-input-privateKey">
+    </div>
+</script>
+<script type="text/x-red" data-help-name="FCF-DialogflowConfig">
+    <p>
+        請於此填寫呼叫Dialogflow API的Credential資料
+    </p>
+</script>
