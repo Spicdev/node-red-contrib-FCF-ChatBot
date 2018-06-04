@@ -16,7 +16,7 @@ module.exports = function (RED) {
         node.rules = config.rules;
         var projectID = this.credentials.projectID;
         var email = this.credentials.email;
-        var privateKey = this.credentials.privateKey;
+        var privateKey = this.credentials.privateKey.replace(/\\n/g, "\n");
 
         this.on("input", function (msg) {
 
@@ -27,7 +27,7 @@ module.exports = function (RED) {
             const gtoken = new GoogleToken({
                 email: email,
                 scope: ["https://www.googleapis.com/auth/cloud-platform"],
-                key: privateKey.replace(/\\n/g, "\n")
+                key: privateKey
             });
 
             var sendRequest = function (token) {
