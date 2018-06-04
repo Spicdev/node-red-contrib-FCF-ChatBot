@@ -14,11 +14,10 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         var node = this;
         node.agentCredentials = RED.nodes.getNode(config.agentCredentials);
-        console.log(node.agentCredentials);
         node.rules = config.rules;
-        var projectID = this.credentials.projectID;
-        var email = this.credentials.email;
-        var privateKey = this.credentials.privateKey;
+        var projectID = node.agentCredentials.credentials.projectID;
+        var email = node.agentCredentials.credentials.email;
+        var privateKey = node.agentCredentials.credentials.privateKey;
         privateKey = privateKey.replace(/\\n/g, "\n");
 
         this.on("input", function (msg) {
@@ -81,17 +80,5 @@ module.exports = function (RED) {
             gt();
         });
     }
-    RED.nodes.registerType("FCF-Dispatcher", Dispatcher, {
-        credentials: {
-            projectID: {
-                type: "text"
-            },
-            email: {
-                type: "text"
-            },
-            privateKey: {
-                type: "text"
-            }
-        }
-    });
+    RED.nodes.registerType("FCF-Dispatcher", Dispatcher);
 };
