@@ -40,7 +40,7 @@ module.exports = function (RED) {
         var checkUTF = false;
 
         if (req.headers["content-type"]) {
-            var parsedType = typer.parse(req.headers["content-type"])
+            var parsedType = typer.parse(req.headers["content-type"]);
             if (parsedType.type === "text") {
                 isText = true;
             } else if (parsedType.subtype === "xml" || parsedType.suffix === "xml") {
@@ -63,69 +63,13 @@ module.exports = function (RED) {
                 return next(err);
             }
             if (!isText && checkUTF && isUtf8(buf)) {
-                buf = buf.toString()
+                buf = buf.toString();
             }
             req.body = buf;
             next();
         });
     }
 
-    var corsSetup = false;
-
-    function createRequestWrapper(node, req) {
-        // This misses a bunch of properties (eg headers). Before we use this function
-        // need to ensure it captures everything documented by Express and HTTP modules.
-        var wrapper = {
-            _req: req
-        };
-        var toWrap = [
-            "param",
-            "get",
-            "is",
-            "acceptsCharset",
-            "acceptsLanguage",
-            "app",
-            "baseUrl",
-            "body",
-            "cookies",
-            "fresh",
-            "hostname",
-            "ip",
-            "ips",
-            "originalUrl",
-            "params",
-            "path",
-            "protocol",
-            "query",
-            "route",
-            "secure",
-            "signedCookies",
-            "stale",
-            "subdomains",
-            "xhr",
-            "socket" // TODO: tidy this up
-        ];
-        toWrap.forEach(function (f) {
-            if (typeof req[f] === "function") {
-                wrapper[f] = function () {
-                    node.warn(RED._("uiIn.errors.deprecated-call", {
-                        method: "msg.req." + f
-                    }));
-                    var result = req[f].apply(req, arguments);
-                    if (result === req) {
-                        return wrapper;
-                    } else {
-                        return result;
-                    }
-                }
-            } else {
-                wrapper[f] = req[f];
-            }
-        });
-
-
-        return wrapper;
-    }
     function createResponseWrapper(node, res) {
         var wrapper = {
             _res: res
@@ -165,14 +109,14 @@ module.exports = function (RED) {
                 } else {
                     return result;
                 }
-            }
+            };
         });
         return wrapper;
     }
 
     var corsHandler = function (req, res, next) {
         next();
-    }
+    };
 
     if (RED.settings.httpNodeCors) {
         corsHandler = cors(RED.settings.httpNodeCors);
@@ -183,19 +127,10 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, n);
         if (RED.settings.httpNodeRoot !== false) {
 
-            if (!n.url) {
-                this.warn(RED._("uiIn.errors.missing-path"));
-                return;
-            }
-            this.url = n.url;
-            if (this.url[0] !== "/") {
-                this.url = "/" + this.url;
-            }
             this.method = n.method;
-            this.upload = n.upload;
-            this.swaggerDoc = n.swaggerDoc;
 
             var node = this;
+            node.webhookConfig = RED.nodes.getNode(n.webhookConfig);
 
             this.errorHandler = function (err, req, res, next) {
                 node.warn(err);
@@ -203,43 +138,43 @@ module.exports = function (RED) {
             };
 
             this.callback = function (req, res) {
-                var msgid = RED.util.generateId();
+                let msgid = RED.util.generateId();
                 res._msgid = msgid;
-                if (node.method.match(/^(post|delete|put|options|patch)$/)) {
-                    node.send({
-                        _msgid: msgid,
-                        req: req,
-                        res: createResponseWrapper(node, res),
-                        payload: req.body//輸出在這
-                    });
-                } else if (node.method == "get") {
-                    console.log(req.query["hub.challenge"]);
-                    res.status(200).send(req.query["hub.challenge"]);//此行可直接回應給客戶端
-                    // node.send({
-                    //     _msgid: msgid,
-                    //     req: req,
-                    //     res: createResponseWrapper(node, res),
-                    //     payload: req.query//get請求的網址的參數內容會包成query物件，會長下面這樣
-                    //     /*
-                    //     {
-                    //         'hub.mode':'subscribe',
-                    //         'hub.challenge':'1017775362',
-                    //         'hub.verify_token':'123'
-                    //     }
-                    //     */
-                    // });
-                } else {
-                    node.send({
-                        _msgid: msgid,
-                        req: req,
-                        res: createResponseWrapper(node, res)
-                    });
+                let mode = req.query["hub.mode"];
+                let token = req.query["hub.verify_token"];
+                let challenge = req.query["hub.challenge"];
+                if (mode && token) {
+                    if (mode === "subscribe" && token === node.webhookConfig.credentials.verifyToken) {
+                        console.log("challenge:" + challenge);
+                        res.status(200).send(challenge);
+                    }
                 }
+            };
+
+            var postCallback = function (req, res, next) {
+                let msgid = RED.util.generateId();
+                res._msgid = msgid;
+                let body = req.body;
+                if (body.object === "page") {
+                    body.entry.forEach(function (entry) {
+                        let webhook_event = entry.messaging[0];
+                        console.log(webhook_event);
+                        let sender_psid = webhook_event.sender.id;
+                        console.log("Sender PSID: " + sender_psid);
+                        if (webhook_event.message) {
+                            console.log("webhook_event.message: " + webhook_event.message);
+                        }
+                    });
+                    res.status(200).send("EVENT_RECEIVED");
+                } else {
+                    res.sendStatus(404);
+                }
+                next();
             };
 
             var httpMiddleware = function (req, res, next) {
                 next();
-            }
+            };
 
             if (RED.settings.httpNodeMiddleware) {
                 if (typeof RED.settings.httpNodeMiddleware === "function") {
@@ -249,7 +184,8 @@ module.exports = function (RED) {
 
             var metricsHandler = function (req, res, next) {
                 next();
-            }
+            };
+
             if (this.metric()) {
                 console.log("metric");
                 metricsHandler = function (req, res, next) {
@@ -269,29 +205,8 @@ module.exports = function (RED) {
                 };
             }
 
-            var multipartParser = function (req, res, next) { next(); }
-            if (this.upload) {
-                console.log("upload");
-                var mp = multer({ storage: multer.memoryStorage() }).any();
-                multipartParser = function (req, res, next) {
-                    mp(req, res, function (err) {
-                        req._body = true;
-                        next(err);
-                    })
-                };
-            }
-            //當我預計此Node接收的請求為post或get或其他...會在Node的表單選擇post或get，是get就進到get的if，其他反之亦然，且表單每改一次他會重新部署一次
-            if (this.method == "get") {
-                RED.httpNode.get(this.url, cookieParser(), httpMiddleware, corsHandler, metricsHandler, this.callback, this.errorHandler);
-            } else if (this.method == "post") {
-                RED.httpNode.post(this.url, cookieParser(), httpMiddleware, corsHandler, metricsHandler, jsonParser, urlencParser, multipartParser, rawBodyParser, this.callback, this.errorHandler);
-            } else if (this.method == "put") {
-                RED.httpNode.put(this.url, cookieParser(), httpMiddleware, corsHandler, metricsHandler, jsonParser, urlencParser, rawBodyParser, this.callback, this.errorHandler);
-            } else if (this.method == "patch") {
-                RED.httpNode.patch(this.url, cookieParser(), httpMiddleware, corsHandler, metricsHandler, jsonParser, urlencParser, rawBodyParser, this.callback, this.errorHandler);
-            } else if (this.method == "delete") {
-                RED.httpNode.delete(this.url, cookieParser(), httpMiddleware, corsHandler, metricsHandler, jsonParser, urlencParser, rawBodyParser, this.callback, this.errorHandler);
-            }
+            RED.httpNode.get("/webhook", cookieParser(), httpMiddleware, corsHandler, metricsHandler, this.callback, this.errorHandler);
+            RED.httpNode.post("/webhook", cookieParser(), httpMiddleware, corsHandler, metricsHandler, jsonParser, urlencParser, rawBodyParser, postCallback, this.errorHandler);
 
             this.on("close", function () {
                 var node = this;
@@ -306,78 +221,4 @@ module.exports = function (RED) {
         }
     }
     RED.nodes.registerType("UI-In", uiIn);
-
-    function uiOut(n) {
-        RED.nodes.createNode(this, n);
-        var node = this;
-        this.headers = n.headers || {};
-        this.statusCode = n.statusCode;
-        this.on("input", function (msg) {
-            if (msg.res) {
-                var headers = RED.util.cloneMessage(node.headers);//只印出空物件
-                if (msg.headers) {//我用postman送請求，body放123或abc時，都沒有進來
-                    if (msg.headers.hasOwnProperty("x-node-red-request-node")) {//我用postman送請求，body放123或abc時，都沒有進來
-                        var headerHash = msg.headers["x-node-red-request-node"];
-                        delete msg.headers["x-node-red-request-node"];
-                        var hash = hashSum(msg.headers);
-                        if (hash === headerHash) {//我用postman送請求，body放123或abc時，都沒有進來
-                            delete msg.headers;
-                        }
-                    }
-                    if (msg.headers) {//我用postman送請求，body放123或abc時，都沒有進來
-                        for (var h in msg.headers) {
-                            if (msg.headers.hasOwnProperty(h) && !headers.hasOwnProperty(h)) {
-                                headers[h] = msg.headers[h];
-                            }
-                        }
-                    }
-                }
-                if (Object.keys(headers).length > 0) {//我用postman送請求，body放123或abc時，都沒有進來
-                    msg.res._res.set(headers);
-                }
-                if (msg.cookies) {//我用postman送請求，body放123或abc時，都沒有進來
-                    for (var name in msg.cookies) {
-                        if (msg.cookies.hasOwnProperty(name)) {
-                            if (msg.cookies[name] === null || msg.cookies[name].value === null) {
-                                if (msg.cookies[name] !== null) {
-                                    msg.res._res.clearCookie(name, msg.cookies[name]);
-                                } else {
-                                    msg.res._res.clearCookie(name);
-                                }
-                            } else if (typeof msg.cookies[name] === "object") {
-                                msg.res._res.cookie(name, msg.cookies[name].value, msg.cookies[name]);
-                            } else {
-                                msg.res._res.cookie(name, msg.cookies[name]);
-                            }
-                        }
-                    }
-                }
-                var statusCode = node.statusCode || msg.statusCode || 200;//這三個看哪個存在就指定給左邊的變數，越左邊的越優先判斷
-                if (typeof msg.payload == "object" && !Buffer.isBuffer(msg.payload)) {
-                    msg.res._res.status(statusCode).jsonp(msg.payload);
-                } else {
-                    if (msg.res._res.get("content-length") == null) {//我用postman送請求，body放123或abc時，都會進到這個if
-                        var len;
-                        if (msg.payload == null) {
-                            len = 0;
-                        } else if (Buffer.isBuffer(msg.payload)) {
-                            len = msg.payload.length;
-                        } else if (typeof msg.payload == "number") {
-                            len = Buffer.byteLength("" + msg.payload);
-                        } else {
-                            len = Buffer.byteLength(msg.payload);
-                        }
-                        msg.res._res.set("content-length", len);
-                    }
-                    if (typeof msg.payload === "number") {
-                        msg.payload = "" + msg.payload;
-                    }
-                    msg.res._res.status(statusCode).send(msg.payload);//我用postman送請求，body放123或abc時，輸出else這裡
-                }
-            } else {
-                node.warn(RED._("uiIn.errors.no-response"));
-            }
-        });
-    }
-    RED.nodes.registerType("UI-Out", uiOut);
-}
+};
