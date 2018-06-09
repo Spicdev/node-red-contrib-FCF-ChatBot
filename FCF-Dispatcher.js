@@ -53,7 +53,7 @@ module.exports = function (RED) {
                 };
 
                 request(options, function (error, response, body) {
-                    var body = JSON.parse(body);
+                    body = JSON.parse(body);
                     var action = body.queryResult.action;
                     rules.forEach(function (rule) {
                         if (action == (rule.topic).toString()) {

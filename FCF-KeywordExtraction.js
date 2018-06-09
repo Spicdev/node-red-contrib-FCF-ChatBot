@@ -50,7 +50,7 @@ module.exports = function (RED) {
                 };
 
                 request(options, function (error, response, body) {
-                    var body = JSON.parse(body);
+                    body = JSON.parse(body);
                     msg.query = body.queryResult.parameters;//取得關鍵字
                     node.send(msg);
                 });

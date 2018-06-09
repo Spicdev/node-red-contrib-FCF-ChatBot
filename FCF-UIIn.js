@@ -27,6 +27,7 @@ module.exports = function (RED) {
     var typer = require("media-typer");
     var isUtf8 = require("is-utf8");
     var hashSum = require("hash-sum");
+    var moment = require("moment");
 
     function rawBodyParser(req, res, next) {
         if (req.skipRawBodyParser) { next(); } // don"t parse this if told to skip
@@ -109,7 +110,7 @@ module.exports = function (RED) {
                 } else {
                     return result;
                 }
-            };
+            }
         });
         return wrapper;
     }
@@ -124,11 +125,12 @@ module.exports = function (RED) {
     }
 
     function uiIn(n) {
+
         RED.nodes.createNode(this, n);
+
         if (RED.settings.httpNodeRoot !== false) {
 
             this.method = n.method;
-
             var node = this;
             node.webhookConfig = RED.nodes.getNode(n.webhookConfig);
 
@@ -145,31 +147,40 @@ module.exports = function (RED) {
                 let challenge = req.query["hub.challenge"];
                 if (mode && token) {
                     if (mode === "subscribe" && token === node.webhookConfig.credentials.verifyToken) {
-                        console.log("challenge:" + challenge);
+                        console.log("Webhook驗證成功");
                         res.status(200).send(challenge);
+                    } else {
+                        res.sendStatus(403);
                     }
                 }
             };
 
-            var postCallback = function (req, res, next) {
+            var postCallback = function (req, res) {
                 let msgid = RED.util.generateId();
                 res._msgid = msgid;
                 let body = req.body;
                 if (body.object === "page") {
                     body.entry.forEach(function (entry) {
                         let webhook_event = entry.messaging[0];
-                        console.log(webhook_event);
-                        let sender_psid = webhook_event.sender.id;
-                        console.log("Sender PSID: " + sender_psid);
                         if (webhook_event.message) {
-                            console.log("webhook_event.message: " + webhook_event.message);
+                            node.send({
+                                _msgid: msgid,
+                                req: req,
+                                res: createResponseWrapper(node, res),
+                                payload: {
+                                    chatId: webhook_event.recipient.id,
+                                    messageId: webhook_event.message.mid,
+                                    content: webhook_event.message.text,//使用者的文字訊息
+                                    type: "message",
+                                    date: moment().format("YYYY-MM-DD HH:mm a")
+                                }
+                            });
                         }
                     });
                     res.status(200).send("EVENT_RECEIVED");
                 } else {
                     res.sendStatus(404);
                 }
-                next();
             };
 
             var httpMiddleware = function (req, res, next) {
