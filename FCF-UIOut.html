@@ -1,0 +1,60 @@
+<script type="text/javascript">
+    RED.nodes.registerType("UI-Out", {
+        category: "FCF",
+        color: "#FFCC66",
+        defaults: {
+            name: {
+                value: ""
+            },
+            track: {
+                value: false
+            },
+            webhookConfig: {
+                value: "",
+                type: "FCF-FacebookMessengerWebhookConfig",
+                required: true
+            }
+        },
+        inputs: 1,
+        outputs: 0,
+        icon: "white-globe.png",
+        label: function () {
+            return "New Facebook Out";
+        },
+        labelStyle: function () {
+            return this.name ? "node_label_italic" : "";
+        },
+        oneditsave: function () {
+            var track = $('#node-input-track').is(':checked');
+            this.outputs = track ? 1 : 0;
+        }
+    });
+    var headerTypes = [
+        { value: "content-type", label: "Content-Type", hasValue: false },
+        { value: "location", label: "Location", hasValue: false },
+        { value: "other", label: RED._("node-red:httpin.label.other"), icon: "red/images/typedInput/az.png" }
+    ]
+    var contentTypes = [
+        { value: "application/json", label: "application/json", hasValue: false },
+        { value: "application/xml", label: "application/xml", hasValue: false },
+        { value: "text/css", label: "text/css", hasValue: false },
+        { value: "text/html", label: "text/html", hasValue: false },
+        { value: "text/plain", label: "text/plain", hasValue: false },
+        { value: "image/gif", label: "image/gif", hasValue: false },
+        { value: "image/png", label: "image/png", hasValue: false },
+        { value: "other", label: RED._("node-red:httpin.label.other"), icon: "red/images/typedInput/az.png" }
+    ];
+</script>
+<script type="text/x-red" data-template-name="UI-Out">
+    <div class="form-row" style="margin-top:25px;">
+        <label for="node-input-webhookConfig" style="display:block;width:100%;"><i class="icon-bookmark"></i>Webhook Config：</label>
+        <input type="text" id="node-input-webhookConfig" placeholder="webhookConfig">
+    </div>
+    <div class="form-row">
+        <label for="node-input-track"><i class="icon-envelope"></i> Track Conversation：</label>
+        <input type="checkbox" value="true" id="node-input-track">
+    </div>
+</script>
+<script type="text/x-red" data-help-name="UI-Out">
+    此節點用來將訊息傳送給Messenger的使用者
+</script>

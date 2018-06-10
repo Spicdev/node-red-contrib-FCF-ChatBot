@@ -164,20 +164,25 @@ module.exports = function (RED) {
                         let webhook_event = entry.messaging[0];
                         if (webhook_event.message) {
                             node.send({
-                                _msgid: msgid,
-                                req: req,
-                                res: createResponseWrapper(node, res),
                                 payload: {
-                                    chatId: webhook_event.recipient.id,
+                                    chatId: webhook_event.sender.id,
                                     messageId: webhook_event.message.mid,
-                                    content: webhook_event.message.text,//使用者的文字訊息
                                     type: "message",
-                                    date: moment().format("YYYY-MM-DD HH:mm a")
-                                }
+                                    content: webhook_event.message.text,//使用者的文字訊息
+                                    date: moment().format("YYYY-MM-DD HH:mm a"),
+                                    inbound: false
+                                },
+                                originalMessage: {
+                                    transport: "facebook",
+                                    chat: {
+                                        id: webhook_event.sender.id
+                                    }
+                                },
+                                _msgid: msgid
                             });
                         }
                     });
-                    res.status(200).send("EVENT_RECEIVED");
+                    res.status(200).send('EVENT_RECEIVED');
                 } else {
                     res.sendStatus(404);
                 }
