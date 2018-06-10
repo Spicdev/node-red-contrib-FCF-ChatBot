@@ -1,33 +1,42 @@
 var request = require("request");
 
-module.exports = function(RED) {
+module.exports = function (RED) {
 
     function FacebookNotification(config) {
 
         RED.nodes.createNode(this, config);
         var node = this;
-        node.token = config.token;
-        var context = this.context().flow;
 
-        this.on('input', function(msg) {
-            request({
-                    uri: 'https://graph.facebook.com/v2.6/me/messages?access_token=' + node.token,
-                    method: 'POST',
-                    json: {
-                        "recipient": {
-                            "id": msg.userID
-                        },
-                        "message": {
-                            "text": msg.payload
-                        }
+        this.on("input", function (msg) {
+            var headers = {
+                "Content-Type": "application/json;charset=utf-8"
+            };
+            var options = {
+                url: `https://graph.facebook.com/v2.6/me/messages?access_token=${node.credentials.pageAccessToken}`,
+                method: "POST",
+                headers: headers,
+                body: JSON.stringify({
+                    "recipient": {
+                        "id": msg.payload.userID
+                    },
+                    "message": {
+                        "text": msg.payload.content
                     }
-                },
-                function(error, response, body) {
-                    console.log(msg);
+                })
+            };
+            request(options, function (error, response, body) {
+                console.log(options);
+                if (error) {
+                    console.log(error);
                 }
-            );
+            });
         });
     }
-
-    RED.nodes.registerType('FCF-FacebookNotification', FacebookNotification);
+    RED.nodes.registerType("FCF-FacebookNotification", FacebookNotification, {
+        credentials: {
+            pageAccessToken: {
+                type: "text"
+            }
+        }
+    });
 };
