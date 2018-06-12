@@ -1,5 +1,3 @@
-var bodyParser = require("body-parser");
-
 module.exports = function (RED) {
     function PushService(config) {
 

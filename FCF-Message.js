@@ -1,9 +1,9 @@
-var _ = require('underscore');
-var utils = require('./lib/helpers/utils');
-var MessageTemplate = require('./lib/message-template');
-var emoji = require('node-emoji');
+var _ = require("underscore");
+var utils = require("./lib/helpers/utils");
+var MessageTemplate = require("./lib/message-template");
+var emoji = require("node-emoji");
 
-module.exports = function(RED) {
+module.exports = function (RED) {
 
     function Message(config) {
 
@@ -12,20 +12,20 @@ module.exports = function(RED) {
         this.message = config.message;
         this.answer = config.answer;
         this.parse_mode = config.parse_mode;
-        this.transports = ['telegram', 'slack', 'facebook', 'smooch'];
+        this.transports = ["telegram", "slack", "facebook", "smooch"];
 
-        this.pickOne = function(messages) {
+        this.pickOne = function (messages) {
             var luck = Math.floor(Math.random() * messages.length);
             return _.isString(messages[luck]) ? messages[luck] : messages[luck].message;
         };
 
-        this.emptyMessages = function(messages) {
-            return _.isEmpty(messages) || _(messages).all(function(message) {
+        this.emptyMessages = function (messages) {
+            return _.isEmpty(messages) || _(messages).all(function (message) {
                 return _.isEmpty(message);
             });
         };
 
-        this.on('input', function(msg) {
+        this.on("input", function (msg) {
 
             var message = node.message;
             var answer = node.answer;
@@ -50,11 +50,11 @@ module.exports = function(RED) {
             } else if (_.isNumber(msg.payload)) {
                 message = String(msg.payload);
             } else {
-                node.error('Empty message');
+                node.error("Empty message");
             }
 
             msg.payload = {
-                type: 'message',
+                type: "message",
                 content: emoji.emojify(template(message)),
                 chatId: chatId,
                 messageId: messageId,
@@ -74,5 +74,5 @@ module.exports = function(RED) {
             node.send(msg);
         });
     }
-    RED.nodes.registerType('FCF-Message', Message);
+    RED.nodes.registerType("FCF-Message", Message);
 };

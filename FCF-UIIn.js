@@ -71,50 +71,6 @@ module.exports = function (RED) {
         });
     }
 
-    function createResponseWrapper(node, res) {
-        var wrapper = {
-            _res: res
-        };
-        var toWrap = [
-            "append",
-            "attachment",
-            "cookie",
-            "clearCookie",
-            "download",
-            "end",
-            "format",
-            "get",
-            "json",
-            "jsonp",
-            "links",
-            "location",
-            "redirect",
-            "render",
-            "send",
-            "sendfile",
-            "sendFile",
-            "sendStatus",
-            "set",
-            "status",
-            "type",
-            "vary"
-        ];
-        toWrap.forEach(function (f) {
-            wrapper[f] = function () {
-                node.warn(RED._("uiIn.errors.deprecated-call", {
-                    method: "msg.res." + f
-                }));
-                var result = res[f].apply(res, arguments);
-                if (result === res) {
-                    return wrapper;
-                } else {
-                    return result;
-                }
-            }
-        });
-        return wrapper;
-    }
-
     var corsHandler = function (req, res, next) {
         next();
     };

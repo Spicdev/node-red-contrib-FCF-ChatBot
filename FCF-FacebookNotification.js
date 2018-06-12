@@ -25,7 +25,6 @@ module.exports = function (RED) {
                 })
             };
             request(options, function (error, response, body) {
-                console.log(options);
                 if (error) {
                     console.log(error);
                 }

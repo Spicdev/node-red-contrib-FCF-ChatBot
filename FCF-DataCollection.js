@@ -1,6 +1,6 @@
 var request = require("request");
 
-module.exports = function(RED) {
+module.exports = function (RED) {
     function DataCollection(config) {
 
         RED.nodes.createNode(this, config);
@@ -9,7 +9,7 @@ module.exports = function(RED) {
         node.rules = config.rules;
         node.collect = config.collect;
 
-        this.on('input', function(msg) {
+        this.on("input", function (msg) {
 
             var rules = node.rules;
             var collect = node.collect;
@@ -42,16 +42,16 @@ module.exports = function(RED) {
                     context.set("dataCount", context.get("dataCount") - 1);
                     node.send(output);
                 }
-            else {
-                output[0] = null;
-                output[1] = msg;
-                var query = context.get("query");
-                query[rules[context.get("dataCount") + 1].topic2] = msg.payload.content;
-                context.set("query", query);
-                msg.query = context.get("query");
-                context.set("dataCount", null);
-                node.send(output);
-            }
+                else {
+                    output[0] = null;
+                    output[1] = msg;
+                    var query = context.get("query");
+                    query[rules[context.get("dataCount") + 1].topic2] = msg.payload.content;
+                    context.set("query", query);
+                    msg.query = context.get("query");
+                    context.set("dataCount", null);
+                    node.send(output);
+                }
 
             if (collect == "userData")
                 if (context.get("dataCount") == null) {
@@ -82,17 +82,17 @@ module.exports = function(RED) {
 
                     node.send(output);
                 }
-            else {
-                output[0] = null;
-                output[1] = msg;
-                var userData = context.get("userData");
-                userData[rules[context.get("dataCount") + 1].topic2] = msg.payload.content;
-                context.set("userData", userData);
-                msg.userData = context.get("userData");
-                context.set("dataCount", null);
-                node.send(output);
-            }
+                else {
+                    output[0] = null;
+                    output[1] = msg;
+                    var userData = context.get("userData");
+                    userData[rules[context.get("dataCount") + 1].topic2] = msg.payload.content;
+                    context.set("userData", userData);
+                    msg.userData = context.get("userData");
+                    context.set("dataCount", null);
+                    node.send(output);
+                }
         });
     }
-    RED.nodes.registerType('FCF-DataCollection', DataCollection);
+    RED.nodes.registerType("FCF-DataCollection", DataCollection);
 };

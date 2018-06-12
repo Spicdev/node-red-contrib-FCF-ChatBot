@@ -1,23 +1,23 @@
-var _ = require('underscore');
-var moment = require('moment');
-var ChatLog = require('./lib/chat-log');
-var ChatContextStore = require('./lib/chat-context-store');
-var helpers = require('./lib/facebook/facebook');
-var utils = require('./lib/helpers/utils');
-var request = require('request').defaults({
+var _ = require("underscore");
+var moment = require("moment");
+var ChatLog = require("./lib/chat-log");
+var ChatContextStore = require("./lib/chat-context-store");
+var helpers = require("./lib/facebook/facebook");
+var utils = require("./lib/helpers/utils");
+var request = require("request").defaults({
     encoding: null
 });
-var Bot = require('./lib/facebook/messenger-bot');
-var clc = require('cli-color');
+var Bot = require("./lib/facebook/messenger-bot");
+var clc = require("cli-color");
 
 var DEBUG = false;
 var green = clc.greenBright;
 var white = clc.white;
 var grey = clc.blackBright;
 
-module.exports = function(RED) { //module.exports開始
+module.exports = function (RED) {
 
-    function FacebookBotNode(n) { //FacebookBotNode開始
+    function FacebookBotNode(n) {
         RED.nodes.createNode(this, n);
 
         var self = this;
@@ -27,32 +27,32 @@ module.exports = function(RED) { //module.exports開始
         this.usernames = [];
         if (n.usernames) {
 
-            this.usernames = _(n.usernames.split(',')).chain()
-                .map(function(userId) {
-                    return userId.match(/^[a-zA-Z0-9_]+?$/) ? userId : null
+            this.usernames = _(n.usernames.split(",")).chain()
+                .map(function (userId) {
+                    return userId.match(/^[a-zA-Z0-9_]+?$/) ? userId : null;
                 })
                 .compact()
                 .value();
         }
 
 
-        this.handleMessage = function(botMsg) { //handleMessage開始
+        this.handleMessage = function (botMsg) {
 
 
             var facebookBot = self.bot;
 
             if (DEBUG) {
                 // eslint-disable-next-line no-console
-                console.log('START:-------');
+                console.log("START:-------");
                 // eslint-disable-next-line no-console
                 console.log(botMsg);
                 // eslint-disable-next-line no-console
-                console.log('END:-------');
+                console.log("END:-------");
             }
 
             // mark the original message with the platform
             botMsg = _.extend({}, botMsg, {
-                transport: 'facebook'
+                transport: "facebook"
             });
 
             var userId = botMsg.sender.id;
@@ -66,57 +66,57 @@ module.exports = function(RED) { //module.exports開始
             var payload = null;
             // decode the message, eventually download stuff
             self.getMessageDetails(botMsg, self.bot)
-                .then(function(obj) {
+                .then(function (obj) {
                     payload = obj;
-                    return helpers.getOrFetchProfile(userId, self.bot)
+                    return helpers.getOrFetchProfile(userId, self.bot);
                 })
-                .then(function(profile) {
+                .then(function (profile) {
                     // store some information
-                    chatContext.set('chatId', chatId);
-                    chatContext.set('messageId', messageId);
-                    chatContext.set('userId', userId);
-                    chatContext.set('firstName', profile.first_name);
-                    chatContext.set('lastName', profile.last_name);
-                    chatContext.set('authorized', isAuthorized);
-                    chatContext.set('transport', 'facebook');
-                    chatContext.set('message', payload.content);
+                    chatContext.set("chatId", chatId);
+                    chatContext.set("messageId", messageId);
+                    chatContext.set("userId", userId);
+                    chatContext.set("firstName", profile.first_name);
+                    chatContext.set("lastName", profile.last_name);
+                    chatContext.set("authorized", isAuthorized);
+                    chatContext.set("transport", "facebook");
+                    chatContext.set("message", payload.content);
 
                     var chatLog = new ChatLog(chatContext);
                     return chatLog.log({
                         payload: payload,
                         originalMessage: {
-                            transport: 'facebook',
+                            transport: "facebook",
                             chat: {
                                 id: chatId
                             }
                         },
-                        chat: function() {
+                        chat: function () {
                             return ChatContextStore.getChatContext(self, chatId);
                         }
-                    }, self.log)
+                    }, self.log);
                 })
-                .then(function(msg) {
+                .then(function (msg) {
 
-                    var currentConversationNode = chatContext.get('currentConversationNode');
+                    var currentConversationNode = chatContext.get("currentConversationNode");
                     // if a conversation is going on, go straight to the conversation node, otherwise if authorized
                     // then first pin, if not second pin
                     if (currentConversationNode != null) {
                         // void the current conversation
-                        chatContext.set('currentConversationNode', null);
+                        chatContext.set("currentConversationNode", null);
                         // emit message directly the node where the conversation stopped
-                        RED.events.emit('node:' + currentConversationNode, msg);
+                        RED.events.emit("node:" + currentConversationNode, msg);
                     } else {
-                        facebookBot.emit('relay', msg);
+                        facebookBot.emit("relay", msg);
                     }
 
                 })
-                .catch(function(error) {
-                    facebookBot.emit('relay', null, error);
+                .catch(function (error) {
+                    facebookBot.emit("relay", null, error);
                 });
-        }; ////handleMessage結束
+        };
 
 
-        if (this.credentials) { //if的this.credentials開始
+        if (this.credentials) {
             this.token = this.credentials.token;
             this.app_secret = this.credentials.app_secret;
             this.verify_token = this.credentials.verify_token;
@@ -132,32 +132,32 @@ module.exports = function(RED) { //module.exports開始
                         app_secret: this.app_secret
                     });
 
-                    var uiPort = RED.settings.get('uiPort');
+                    var uiPort = RED.settings.get("uiPort");
                     // eslint-disable-next-line no-console
-                    console.log('');
+                    console.log("");
                     // eslint-disable-next-line no-console
-                    console.log(grey('------ Facebook Webhook ----------------'));
+                    console.log(grey("------ Facebook Webhook ----------------"));
                     // eslint-disable-next-line no-console
-                    console.log(green('Webhook URL: ') + white('http://localhost' + (uiPort != '80' ? ':' + uiPort : '') +
-                        '/redbot/facebook'));
+                    console.log(green("Webhook URL: ") + white("http://localhost" + (uiPort != "80" ? ":" + uiPort : "") +
+                        "/redbot/facebook"));
                     // eslint-disable-next-line no-console
-                    console.log(green('Verify token is: ') + white(this.verify_token));
+                    console.log(green("Verify token is: ") + white(this.verify_token));
                     // eslint-disable-next-line no-console
-                    console.log('');
+                    console.log("");
                     // mount endpoints on local express
                     this.bot.expressMiddleware(RED.httpNode);
 
-                    this.bot.on('message', this.handleMessage);
-                    this.bot.on('postback', this.handleMessage);
-                    this.bot.on('account_linking', this.handleMessage);
+                    this.bot.on("message", this.handleMessage);
+                    this.bot.on("postback", this.handleMessage);
+                    this.bot.on("account_linking", this.handleMessage);
                 }
             }
-        } //if的this.credentials結束
+        }
 
-        this.on('close', function(done) {
-            var endpoints = ['/facebook', '/facebook/_status'];
+        this.on("close", function (done) {
+            var endpoints = ["/facebook", "/facebook/_status"];
             // remove middleware for facebook callback
-            RED.httpNode._router.stack.forEach(function(route, i, routes) {
+            RED.httpNode._router.stack.forEach(function (route, i, routes) {
                 if (route.route && _.contains(endpoints, route.route.path)) {
                     routes.splice(i, 1);
                 }
@@ -165,7 +165,7 @@ module.exports = function(RED) { //module.exports開始
             done();
         });
 
-        this.isAuthorized = function(username, userId) {
+        this.isAuthorized = function (username, userId) {
             if (self.usernames.length > 0) {
                 return self.usernames.indexOf(username) != -1 || self.usernames.indexOf(String(userId)) != -1;
             }
@@ -173,8 +173,8 @@ module.exports = function(RED) { //module.exports開始
         };
 
         // creates the message details object from the original message
-        this.getMessageDetails = function(botMsg) {
-            return new Promise(function(resolve, reject) {
+        this.getMessageDetails = function (botMsg) {
+            return new Promise(function (resolve, reject) {
 
                 //var userId = botMsg.sender.id;
                 var chatId = botMsg.sender.id;
@@ -184,17 +184,17 @@ module.exports = function(RED) { //module.exports開始
                     resolve({
                         chatId: chatId,
                         messageId: messageId,
-                        type: 'account-linking',
+                        type: "account-linking",
                         content: botMsg.account_linking.authorization_code,
                         linkStatus: botMsg.account_linking.status,
                         date: moment(botMsg.timestamp),
                         inbound: true
-                    })
+                    });
                     return;
                 }
 
                 if (botMsg.message == null) {
-                    reject('Unable to detect inbound message for Facebook');
+                    reject("Unable to detect inbound message for Facebook");
                 }
 
                 var message = botMsg.message;
@@ -202,7 +202,7 @@ module.exports = function(RED) { //module.exports開始
                     resolve({
                         chatId: chatId,
                         messageId: messageId,
-                        type: 'message',
+                        type: "message",
                         content: message.quick_reply.payload,
                         date: moment(botMsg.timestamp),
                         inbound: true
@@ -212,7 +212,7 @@ module.exports = function(RED) { //module.exports開始
                     resolve({
                         chatId: chatId,
                         messageId: messageId,
-                        type: 'message',
+                        type: "message",
                         content: message.text,
                         date: moment(botMsg.timestamp),
                         inbound: true
@@ -223,45 +223,45 @@ module.exports = function(RED) { //module.exports開始
                 if (_.isArray(message.attachments) && !_.isEmpty(message.attachments)) {
                     var attachment = message.attachments[0];
                     switch (attachment.type) {
-                        case 'image':
+                        case "image":
                             // download the image into a buffer
                             helpers.downloadFile(attachment.payload.url)
-                                .then(function(buffer) {
+                                .then(function (buffer) {
                                     resolve({
                                         chatId: chatId,
                                         messageId: messageId,
-                                        type: 'photo',
+                                        type: "photo",
                                         content: buffer,
                                         date: moment(botMsg.timestamp),
                                         inbound: true
                                     });
                                 })
-                                .catch(function() {
-                                    reject('Unable to download ' + attachment.payload.url);
+                                .catch(function () {
+                                    reject("Unable to download " + attachment.payload.url);
                                 });
                             break;
-                        case 'file':
+                        case "file":
                             // download the image into a buffer
                             helpers.downloadFile(attachment.payload.url)
-                                .then(function(buffer) {
+                                .then(function (buffer) {
                                     resolve({
                                         chatId: chatId,
                                         messageId: messageId,
-                                        type: 'document',
+                                        type: "document",
                                         content: buffer,
                                         date: moment(botMsg.timestamp),
                                         inbound: true
                                     });
                                 })
-                                .catch(function() {
-                                    reject('Unable to download ' + attachment.payload.url);
+                                .catch(function () {
+                                    reject("Unable to download " + attachment.payload.url);
                                 });
                             break;
-                        case 'location':
+                        case "location":
                             resolve({
                                 chatId: chatId,
                                 messageId: messageId,
-                                type: 'location',
+                                type: "location",
                                 content: {
                                     latitude: attachment.payload.coordinates.lat,
                                     longitude: attachment.payload.coordinates.long
@@ -272,28 +272,28 @@ module.exports = function(RED) { //module.exports開始
                             break;
                     }
                 } else {
-                    reject('Unable to detect inbound message for Facebook Messenger');
+                    reject("Unable to detect inbound message for Facebook Messenger");
                 }
             });
-        }
-    } //FacebookBotNode結束
+        };
+    }
 
-    RED.nodes.registerType('FCF-facebook-node', FacebookBotNode, {
+    RED.nodes.registerType("FCF-facebook-node", FacebookBotNode, {
         credentials: {
             token: {
-                type: 'text'
+                type: "text"
             },
             app_secret: {
-                type: 'text'
+                type: "text"
             },
             verify_token: {
-                type: 'text'
+                type: "text"
             },
             key_pem: {
-                type: 'text'
+                type: "text"
             },
             cert_pem: {
-                type: 'text'
+                type: "text"
             }
         }
     });
@@ -306,21 +306,21 @@ module.exports = function(RED) { //module.exports開始
         this.config = RED.nodes.getNode(this.bot);
         if (this.config) {
             this.status({
-                fill: 'red',
-                shape: 'ring',
-                text: 'disconnected'
+                fill: "red",
+                shape: "ring",
+                text: "disconnected"
             });
 
             node.bot = this.config.bot;
 
             if (node.bot) {
                 this.status({
-                    fill: 'green',
-                    shape: 'ring',
-                    text: 'connected'
+                    fill: "green",
+                    shape: "ring",
+                    text: "connected"
                 });
 
-                node.bot.on('relay', function(message, error) {
+                node.bot.on("relay", function (message, error) {
                     if (error != null) {
                         node.error(error);
                     } else {
@@ -329,13 +329,13 @@ module.exports = function(RED) { //module.exports開始
                 });
 
             } else {
-                node.warn('Please select a chatbot configuration in Facebook Messenger Receiver');
+                node.warn("Please select a chatbot configuration in Facebook Messenger Receiver");
             }
         } else {
-            node.warn('Missing configuration in Facebook Messenger Receiver');
+            node.warn("Missing configuration in Facebook Messenger Receiver");
         }
     }
-    RED.nodes.registerType('FCF-facebook-receive', FacebookInNode);
+    RED.nodes.registerType("FCF-facebook-receive", FacebookInNode);
 
 
     function FacebookOutNode(config) {
@@ -347,18 +347,18 @@ module.exports = function(RED) { //module.exports開始
         this.config = RED.nodes.getNode(this.bot);
         if (this.config) {
             this.status({
-                fill: 'red',
-                shape: 'ring',
-                text: 'disconnected'
+                fill: "red",
+                shape: "ring",
+                text: "disconnected"
             });
 
             node.bot = this.config.bot;
 
             if (node.bot) {
                 this.status({
-                    fill: 'green',
-                    shape: 'ring',
-                    text: 'connected'
+                    fill: "green",
+                    shape: "ring",
+                    text: "connected"
                 });
             } else {
                 node.warn("no bot in config.");
@@ -368,22 +368,22 @@ module.exports = function(RED) { //module.exports開始
         }
 
         function sendMeta(msg) {
-            return new Promise(function(resolve, reject) {
+            return new Promise(function (resolve, reject) {
 
                 var type = msg.payload.type;
                 var bot = node.bot;
 
 
-                var reportError = function(err) {
+                var reportError = function (err) {
                     if (err) {
                         reject(err);
                     } else {
-                        resolve()
+                        resolve();
                     }
                 };
 
                 switch (type) {
-                    case 'persistent-menu':
+                    case "persistent-menu":
                         bot.setPersistentMenu(msg.payload.items, reportError);
                         break;
 
@@ -396,35 +396,35 @@ module.exports = function(RED) { //module.exports開始
 
         function sendMessage(msg) {
 
-            return new Promise(function(resolve, reject) {
+            return new Promise(function (resolve, reject) {
 
                 var type = msg.payload.type;
                 var bot = node.bot;
                 var credentials = node.config.credentials;
 
-                var reportError = function(err) {
+                var reportError = function (err) {
                     if (err) {
                         reject(err);
                     } else {
-                        resolve()
+                        resolve();
                     }
                 };
 
                 switch (type) {
-                    case 'action':
+                    case "action":
                         request({
-                            method: 'POST',
+                            method: "POST",
                             json: {
                                 recipient: {
                                     id: msg.payload.chatId
                                 },
-                                'sender_action': 'typing_on'
+                                "sender_action": "typing_on"
                             },
-                            url: 'https://graph.facebook.com/v2.6/me/messages?access_token=' + credentials.token
+                            url: "https://graph.facebook.com/v2.6/me/messages?access_token=" + credentials.token
                         }, reportError);
                         break;
 
-                    case 'request':
+                    case "request":
 
                         // todo error if not location
                         // send
@@ -432,22 +432,22 @@ module.exports = function(RED) { //module.exports開始
                             msg.payload.chatId, {
                                 text: msg.payload.content,
                                 quick_replies: [{
-                                    'content_type': 'location'
+                                    "content_type": "location"
                                 }]
                             },
                             reportError
                         );
                         break;
 
-                    case 'account-link':
+                    case "account-link":
                         var attachment = {
-                            'type': 'template',
-                            'payload': {
-                                'template_type': 'button',
-                                'text': msg.payload.content,
-                                'buttons': [{
-                                    'type': 'account_link',
-                                    'url': msg.payload.authUrl
+                            "type": "template",
+                            "payload": {
+                                "template_type": "button",
+                                "text": msg.payload.content,
+                                "buttons": [{
+                                    "type": "account_link",
+                                    "url": msg.payload.authUrl
                                 }]
                             }
                         };
@@ -459,10 +459,10 @@ module.exports = function(RED) { //module.exports開始
                         );
                         break;
 
-                    case 'inline-buttons':
-                        var quickReplies = _(msg.payload.buttons).map(function(button) {
+                    case "inline-buttons":
+                        var quickReplies = _(msg.payload.buttons).map(function (button) {
                             var quickReply = {
-                                content_type: 'text',
+                                content_type: "text",
                                 title: button.label,
                                 payload: !_.isEmpty(button.value) ? button.value : button.label
                             };
@@ -483,7 +483,7 @@ module.exports = function(RED) { //module.exports開始
 
                         break;
 
-                    case 'message':
+                    case "message":
                         bot.sendMessage(
                             msg.payload.chatId, {
                                 text: msg.payload.content
@@ -492,20 +492,20 @@ module.exports = function(RED) { //module.exports開始
                         );
                         break;
 
-                    case 'location':
+                    case "location":
                         var lat = msg.payload.content.latitude;
                         var lon = msg.payload.content.longitude;
 
                         var locationAttachment = {
-                            'type': 'template',
-                            'payload': {
-                                'template_type': 'generic',
-                                'elements': {
-                                    'element': {
-                                        'title': !_.isEmpty(msg.payload.place) ? msg.payload.place : 'Position',
-                                        'image_url': 'https:\/\/maps.googleapis.com\/maps\/api\/staticmap?size=764x400&center=' +
-                                            lat + ',' + lon + '&zoom=16&markers=' + lat + ',' + lon,
-                                        'item_url': 'http:\/\/maps.apple.com\/maps?q=' + lat + ',' + lon + '&z=16'
+                            "type": "template",
+                            "payload": {
+                                "template_type": "generic",
+                                "elements": {
+                                    "element": {
+                                        "title": !_.isEmpty(msg.payload.place) ? msg.payload.place : "Position",
+                                        "image_url": "https:\/\/maps.googleapis.com\/maps\/api\/staticmap?size=764x400&center=" +
+                                            lat + "," + lon + "&zoom=16&markers=" + lat + "," + lon,
+                                        "item_url": "http:\/\/maps.apple.com\/maps?q=" + lat + "," + lon + "&z=16"
                                     }
                                 }
                             }
@@ -519,76 +519,76 @@ module.exports = function(RED) { //module.exports開始
                         );
                         break;
 
-                    case 'audio':
+                    case "audio":
                         var audio = msg.payload.content;
                         helpers.uploadBuffer({
                             recipient: msg.payload.chatId,
-                            type: 'audio',
+                            type: "audio",
                             buffer: audio,
                             token: credentials.token,
                             filename: msg.payload.filename
-                        }).catch(function(err) {
+                        }).catch(function (err) {
                             reject(err);
                         });
                         break;
 
-                    case 'document':
+                    case "document":
                         helpers.uploadBuffer({
                             recipient: msg.payload.chatId,
-                            type: 'file',
+                            type: "file",
                             buffer: msg.payload.content,
                             token: credentials.token,
                             filename: msg.payload.filename,
                             mimeType: msg.payload.mimeType
-                        }).catch(function(err) {
+                        }).catch(function (err) {
                             reject(err);
                         });
                         break;
 
-                    case 'photo':
+                    case "photo":
                         var image = msg.payload.content;
                         helpers.uploadBuffer({
                             recipient: msg.payload.chatId,
-                            type: 'image',
+                            type: "image",
                             buffer: image,
                             token: credentials.token,
                             filename: msg.payload.filename
-                        }).catch(function(err) {
+                        }).catch(function (err) {
                             reject(err);
                         });
                         break;
 
                     default:
-                        reject('Unable to prepare unknown message type');
+                        reject("Unable to prepare unknown message type");
                 }
 
             });
         }
 
         // relay message
-        var handler = function(msg) {
+        var handler = function (msg) {
             node.send(msg);
         };
-        RED.events.on('node:' + config.id, handler);
+        RED.events.on("node:" + config.id, handler);
 
         // cleanup on close
-        this.on('close', function() {
-            RED.events.removeListener('node:' + config.id, handler);
+        this.on("close", function () {
+            RED.events.removeListener("node:" + config.id, handler);
         });
 
-        this.on('input', function(msg) {
+        this.on("input", function (msg) {
 
             // check if the message is from facebook
-            if (msg.originalMessage != null && msg.originalMessage.transport !== 'facebook') {
-                // exit, it's not from facebook
+            if (msg.originalMessage != null && msg.originalMessage.transport !== "facebook") {
+                // exit, it"s not from facebook
                 return;
             }
 
-            // try to send the meta first (those messages that doesn't require a valid payload)
+            // try to send the meta first (those messages that doesn"t require a valid payload)
             sendMeta(msg)
-                .then(function() {
+                .then(function () {
                     // ok, meta sent, stop here
-                }, function(error) {
+                }, function (error) {
                     // if here, either there was an error or no met message was sent
                     if (error != null) {
                         node.error(error);
@@ -599,25 +599,20 @@ module.exports = function(RED) { //module.exports開始
                             // invalid payload
                             node.error(payloadError);
                         } else {
-
                             // payload is valid, go on
                             var track = node.track;
                             var chatContext = msg.chat();
-
                             // check if this node has some wirings in the follow up pin, in that case
                             // the next message should be redirected here
                             if (chatContext != null && track && !_.isEmpty(node.wires[0])) {
-                                chatContext.set('currentConversationNode', node.id);
-                                chatContext.set('currentConversationNode_at', moment());
+                                chatContext.set("currentConversationNode", node.id);
+                                chatContext.set("currentConversationNode_at", moment());
                             }
-
                             var chatLog = new ChatLog(chatContext);
-
                             chatLog.log(msg, node.config.log)
-                                .then(function() {
+                                .then(function () {
                                     sendMessage(msg);
                                 });
-
                         } // end valid payload
                     } // end no error
                 }); // end then
@@ -625,6 +620,6 @@ module.exports = function(RED) { //module.exports開始
 
         });
     }
-    RED.nodes.registerType('FCF-facebook-send', FacebookOutNode);
+    RED.nodes.registerType("FCF-facebook-send", FacebookOutNode);
 
-}; //module.exports結束
+};

@@ -1,5 +1,4 @@
-module.exports = function(RED) {
-    //Frame的功能為把所有資料存起來，並作格式化，以便傳給其他服務
+module.exports = function (RED) {
     function Frame(config) {
 
         RED.nodes.createNode(this, config);
@@ -7,7 +6,7 @@ module.exports = function(RED) {
         var context = this.context().flow;
         node.name = config.name;
 
-        this.on('input', function(msg) {
+        this.on("input", function (msg) {
 
             var frame = {};
 
@@ -35,28 +34,27 @@ module.exports = function(RED) {
                 };
 
             if (msg.query != null) {
-                Object.keys(msg.query).map(function(objectKey, index) {
+                Object.keys(msg.query).map(function (objectKey, index) {
                     var value = msg.query[objectKey];
                     frame[name].Query[objectKey] = value;
                 });
             }
             if (msg.userData != null) {
-                Object.keys(msg.userData).map(function(objectKey, index) {
+                Object.keys(msg.userData).map(function (objectKey, index) {
                     var value = msg.userData[objectKey];
                     frame[name].UserData[objectKey] = value;
                 });
             }
             if (msg.result != null) {
-                Object.keys(msg.result).map(function(objectKey, index) {
+                Object.keys(msg.result).map(function (objectKey, index) {
                     var value = msg.result[objectKey];
                     frame[name].Result[objectKey] = value;
                 });
             }
-
             context.set("frame", frame);
             msg.frame = context.get("frame")[name];
             node.send(msg);
         });
     }
-    RED.nodes.registerType('FCF-Frame', Frame);
+    RED.nodes.registerType("FCF-Frame", Frame);
 };
