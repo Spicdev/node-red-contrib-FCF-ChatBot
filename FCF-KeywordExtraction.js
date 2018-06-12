@@ -14,9 +14,9 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         var node = this;
         node.agentCredentials = RED.nodes.getNode(config.agentCredentials);
-        var projectID = node.agentCredentials.credentials.projectID;
-        var email = node.agentCredentials.credentials.email;
-        var privateKey = node.agentCredentials.credentials.privateKey.replace(/\\n/g, "\n");
+        var projectID = node.agentCredentials.credentials.projectID.trim();
+        var email = node.agentCredentials.credentials.email.trim();
+        var privateKey = node.agentCredentials.credentials.privateKey.replace(/\\n/g, "\n").trim();
 
         this.on("input", function (msg) {
 
