@@ -8,19 +8,27 @@ module.exports = function (RED) {
         node.URL = config.URL;
 
         this.on("input", function (msg) {
-            console.log(JSON.stringify(msg.frame));
-            request({
-                uri: node.URL,
+
+            var headers = {
+                "Content-Type": "application/json;charset=utf-8"
+            };
+
+            var options = {
+                url: node.URL,
                 method: "POST",
-                followAllRedirects: true,
+                headers: headers,
                 body: JSON.stringify(msg.frame)
-            }, function (error, response, body) {
-                var result = JSON.parse(body);
-                msg.result = result.Result;
-                msg.payload = result.Message;
+            };
+
+            request(options, function (error, response, body) {
+                body = JSON.parse(body);
+                msg.result = body.Result;
+                msg.payload = body.Message;
                 node.send(msg);
             });
+
         });
+
     }
     RED.nodes.registerType("FCF-PullService", PullService);
 };

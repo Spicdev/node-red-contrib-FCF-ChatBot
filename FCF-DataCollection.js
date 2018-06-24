@@ -57,6 +57,9 @@ module.exports = function (RED) {
                     context.set("query", query);
                     msg.query = context.get("query");
                     context.set("dataCount", null);
+                    if(msg.query.coordinate){
+                        msg.whetherToSendLocation = false;
+                    }
                     node.send(output);
                 }
 
