@@ -1,5 +1,3 @@
-var request = require("request");
-
 module.exports = function (RED) {
     function DataCollection(config) {
 
@@ -8,9 +6,18 @@ module.exports = function (RED) {
         var context = this.context();
         node.rules = config.rules;
         node.collect = config.collect;
+        node.whetherToSendLocation = config.whetherToSendLocation;
+
+        if (node.whetherToSendLocation) {
+            node.rules.push({
+                messageContent: "請點擊以下按鈕來提供您的位置喔!",
+                variableName: "coordinate"
+            });
+        }
 
         this.on("input", function (msg) {
 
+            msg.whetherToSendLocation = node.whetherToSendLocation;
             var rules = node.rules;
             var collect = node.collect;
             var output = [];
@@ -27,26 +34,26 @@ module.exports = function (RED) {
                     var query = {};
                     context.set("query", query);
 
-                    msg.payload = rules[context.get("dataCount")].topic;
+                    msg.payload = rules[context.get("dataCount")].messageContent;
                     context.set("dataCount", context.get("dataCount") - 1);
                     node.send(output);
                 }
                 else if (context.get("dataCount") > -1) {
                     output[0] = msg;
                     output[1] = null;
-                    var query = context.get("query");
-                    query[rules[context.get("dataCount") + 1].topic2] = msg.payload.content;
+                    let query = context.get("query");
+                    query[rules[context.get("dataCount") + 1].variableName] = msg.payload.content;
                     context.set("query", query);
 
-                    msg.payload = rules[context.get("dataCount")].topic;
+                    msg.payload = rules[context.get("dataCount")].messageContent;
                     context.set("dataCount", context.get("dataCount") - 1);
                     node.send(output);
                 }
                 else {
                     output[0] = null;
                     output[1] = msg;
-                    var query = context.get("query");
-                    query[rules[context.get("dataCount") + 1].topic2] = msg.payload.content;
+                    let query = context.get("query");
+                    query[rules[context.get("dataCount") + 1].variableName] = msg.payload.content;
                     context.set("query", query);
                     msg.query = context.get("query");
                     context.set("dataCount", null);
@@ -62,22 +69,22 @@ module.exports = function (RED) {
                     output[0] = msg;
                     output[1] = null;
 
-                    var userData = {};
+                    let userData = {};
                     userData.UserID = msg.payload.chatId;
                     context.set("userData", userData);
 
-                    msg.payload = rules[context.get("dataCount")].topic;
+                    msg.payload = rules[context.get("dataCount")].messageContent;
                     context.set("dataCount", context.get("dataCount") - 1);
                     node.send(output);
                 }
                 else if (context.get("dataCount") > -1) {
                     output[0] = msg;
                     output[1] = null;
-                    var userData = context.get("userData");
-                    userData[rules[context.get("dataCount") + 1].topic2] = msg.payload.content;
+                    let userData = context.get("userData");
+                    userData[rules[context.get("dataCount") + 1].variableName] = msg.payload.content;
                     context.set("userData", userData);
 
-                    msg.payload = rules[context.get("dataCount")].topic;
+                    msg.payload = rules[context.get("dataCount")].messageContent;
                     context.set("dataCount", context.get("dataCount") - 1);
 
                     node.send(output);
@@ -85,8 +92,8 @@ module.exports = function (RED) {
                 else {
                     output[0] = null;
                     output[1] = msg;
-                    var userData = context.get("userData");
-                    userData[rules[context.get("dataCount") + 1].topic2] = msg.payload.content;
+                    let userData = context.get("userData");
+                    userData[rules[context.get("dataCount") + 1].variableName] = msg.payload.content;
                     context.set("userData", userData);
                     msg.userData = context.get("userData");
                     context.set("dataCount", null);

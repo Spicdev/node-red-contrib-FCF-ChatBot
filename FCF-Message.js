@@ -60,7 +60,9 @@ module.exports = function (RED) {
                 messageId: messageId,
                 inbound: false
             };
-
+            if (msg.whetherToSendLocation) {
+                msg.payload.type = "request";//將type設為request才能在Facebook Out送出詢問位置的請求
+            }
             msg.payload.options = {};
             // parse mode
             if (!_.isEmpty(parse_mode)) {
