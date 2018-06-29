@@ -17,6 +17,7 @@ module.exports = function (RED) {
                 url: node.URL,
                 method: "POST",
                 headers: headers,
+                followAllRedirects: true,
                 body: JSON.stringify(msg.frame)
             };
 

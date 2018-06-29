@@ -24,6 +24,9 @@
             },
             app_secret: {//Facebook那邊的應用程式密鑰（要打密碼才會顯示）
                 type: "text"
+            },
+            webhookURL: {
+                type: "text"
             }
         },
         label: function () {//回傳這裡的botname變數
@@ -34,37 +37,34 @@
 </script>
 
 <script type="text/x-red" data-template-name="FCF-facebook-node">
-  <div class="form-row">
-    <label for="node-config-input-botname"><i class="icon-bookmark"></i> Bot-Name</label>
-    <input type="text" id="node-config-input-botname">
-  </div>
-  <div class="form-row">
-    <label for="node-config-input-token"><i class="icon-cog"></i> Token</label>
-    <input type="text" id="node-config-input-token" placeholder="Page Token">
-    <div style="max-width: 460px;font-size: 12px;color: #999999;line-height: 14px;margin-top:5px;">
-
+    <div class="form-row">
+        <label for="node-config-input-botname"><i class="icon-bookmark"></i> Bot-Name</label>
+        <input type="text" id="node-config-input-botname">
     </div>
-  </div>
-  <div class="form-row">
-    <label for="node-config-input-app_secret"><i class="icon-cog"></i> App Secret</label>
-    <input type="text" id="node-config-input-app_secret" placeholder="App Secret">
-    <div style="max-width: 460px;font-size: 12px;color: #999999;line-height: 14px;margin-top:5px;">
-
+    <div class="form-row">
+        <label for="node-config-input-token"><i class="icon-cog"></i> Token</label>
+        <input type="text" id="node-config-input-token" placeholder="Page Token">
+        <div style="max-width: 460px;font-size: 12px;color: #999999;line-height: 14px;margin-top:5px;">
+        </div>
     </div>
-  </div>
-  <div class="form-row">
-    <label for="node-config-input-verify_token"><i class="icon-random"></i> Verify</label>
-    <input type="text" id="node-config-input-verify_token" placeholder="Webhook Token">
-    <div style="max-width: 460px;font-size: 12px;color: #999999;line-height: 14px;margin-top:5px;">
-
+    <div class="form-row">
+        <label for="node-config-input-app_secret"><i class="icon-cog"></i> App Secret</label>
+        <input type="text" id="node-config-input-app_secret" placeholder="App Secret">
+        <div style="max-width: 460px;font-size: 12px;color: #999999;line-height: 14px;margin-top:5px;">
+        </div>
     </div>
-  </div>
-  <div class="form-row">
-
-  </div>
-  <div class="form-row">
-
-  </div>
+    <div class="form-row">
+        <label for="node-config-input-verify_token"><i class="icon-random"></i> Verify</label>
+        <input type="text" id="node-config-input-verify_token" placeholder="Webhook Token">
+        <div style="max-width: 460px;font-size: 12px;color: #999999;line-height: 14px;margin-top:5px;">
+        </div>
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-webhookURL"><i class="icon-random"></i> Webhook URL</label>
+        <input type="text" id="node-config-input-webhookURL" placeholder="Webhook URL">
+        <div style="max-width: 460px;font-size: 12px;color: #999999;line-height: 14px;margin-top:5px;">
+        </div>
+    </div>
 </script>
 
 <script type="text/x-red" data-help-name="FCF-facebook-node">

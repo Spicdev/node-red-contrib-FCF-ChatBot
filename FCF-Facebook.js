@@ -120,6 +120,7 @@ module.exports = function (RED) {
             this.token = this.credentials.token;
             this.app_secret = this.credentials.app_secret;
             this.verify_token = this.credentials.verify_token;
+            this.webhookURL = this.credentials.webhookURL;
 
             if (this.token) {
                 this.token = this.token.trim();
@@ -129,7 +130,8 @@ module.exports = function (RED) {
                     this.bot = new Bot({
                         token: this.token,
                         verify: this.verify_token,
-                        app_secret: this.app_secret
+                        app_secret: this.app_secret,
+                        webhookURL: this.webhookURL
                     });
 
                     var uiPort = RED.settings.get("uiPort");
@@ -139,7 +141,7 @@ module.exports = function (RED) {
                     console.log(grey("------ Facebook Webhook ----------------"));
                     // eslint-disable-next-line no-console
                     console.log(green("Webhook URL: ") + white("http://localhost" + (uiPort != "80" ? ":" + uiPort : "") +
-                        "/redbot/facebook"));
+                        "/redbot/facebook" + this.webhookURL));
                     // eslint-disable-next-line no-console
                     console.log(green("Verify token is: ") + white(this.verify_token));
                     // eslint-disable-next-line no-console
@@ -287,6 +289,9 @@ module.exports = function (RED) {
                 type: "text"
             },
             verify_token: {
+                type: "text"
+            },
+            webhookURL: {
                 type: "text"
             },
             key_pem: {
